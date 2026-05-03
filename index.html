@@ -359,7 +359,8 @@
   <div class="sync-dot" id="syncDot"></div>
   <span class="sync-label" id="syncLabel">Google Sheets: Belum terhubung</span>
   <button class="btn-sync" id="btnTestConn" onclick="testConnection()">Test Koneksi</button>
-  <button class="btn-sync" id="btnSyncAll" onclick="syncAllToSheets()" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);" disabled>Sync Semua</button>
+  <button class="btn-sync" id="btnSyncAll" onclick="syncAllToSheets()" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);" disabled>&#8593; Kirim ke Sheets</button>
+  <button class="btn-sync" id="btnPullSheets" onclick="pullFromSheets()" style="background:var(--purple-50);border-color:var(--purple-600);color:var(--purple-800);" disabled>&#8595; Tarik dari Sheets</button>
   <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin-left:4px;">
     <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync()" style="width:auto;" />
     <span>Auto-sync</span>
@@ -1435,6 +1436,7 @@ async function testConnection() {
     sheetsConnected = true;
     setSyncState('connected', 'Terhubung ke Google Sheets ✓');
     document.getElementById('btnSyncAll').disabled = false;
+    document.getElementById('btnPullSheets').disabled = false;
     showToast('Berhasil terhubung ke Google Sheets!', 'success');
   } catch(e) {
     sheetsConnected = false;
@@ -1555,6 +1557,72 @@ function setSyncState(state, label) {
   document.getElementById('syncDot').className = 'sync-dot ' + state;
   document.getElementById('syncLabel').textContent = 'Google Sheets: ' + label;
 }
+// ── TARIK DATA DARI SHEETS → localStorage ──
+async function pullFromSheets() {
+  if (!sheetsConnected) { showToast('Hubungkan dulu ke Google Sheets', 'error'); return; }
+  if (!confirm('Tarik data dari Google Sheets?\nData lokal yang ada akan DIGABUNG (artikel baru dari Sheets ditambahkan, yang sudah ada di lokal tetap).')) return;
+
+  setSyncState('syncing', 'Menarik data dari Sheets...');
+  document.getElementById('btnPullSheets').disabled = true;
+
+  try {
+    // Kirim request getAll ke Apps Script via fetch GET + JSONP
+    const data = await getFromSheets({ action: 'getAll' });
+    if (!data.ok) throw new Error(data.message || 'Gagal ambil data');
+
+    const incoming = data.articles || [];
+    if (!incoming.length) {
+      showToast('Tidak ada data di Google Sheets', 'error');
+      setSyncState('connected', 'Terhubung ✓');
+      document.getElementById('btnPullSheets').disabled = false;
+      return;
+    }
+
+    // Merge: tambah artikel dari Sheets yang belum ada di lokal (by id)
+    const localIds = new Set(articles.map(a => a.id));
+    let added = 0;
+    incoming.forEach(a => {
+      if (!localIds.has(a.id)) {
+        articles.push(a);
+        added++;
+      }
+    });
+
+    saveArticles();
+    renderAll();
+    setSyncState('connected', 'Tarik selesai ✓ — ' + added + ' artikel baru');
+    setLastSyncTime();
+    showToast('Berhasil tarik ' + added + ' artikel baru dari Sheets!', 'success');
+  } catch(e) {
+    setSyncState('error', 'Tarik gagal: ' + e.message);
+    showToast('Tarik gagal: ' + e.message, 'error');
+  }
+  document.getElementById('btnPullSheets').disabled = false;
+}
+
+// GET data dari Apps Script via JSONP
+function getFromSheets(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_gsCb_' + Date.now();
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      delete window[cbName]; script.remove();
+      reject(new Error('Timeout — pastikan Apps Script sudah di-redeploy'));
+    }, 12000);
+    window[cbName] = function(data) {
+      clearTimeout(timer); delete window[cbName]; script.remove();
+      resolve(data);
+    };
+    script.onerror = () => {
+      clearTimeout(timer); delete window[cbName];
+      reject(new Error('Gagal load script'));
+    };
+    script.src = SHEETS_URL + '?' + new URLSearchParams({ ...params, callback: cbName });
+    document.head.appendChild(script);
+  });
+}
+
+
 function setLastSyncTime() {
   const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('syncLastTime').textContent = 'Terakhir sync: ' + t;
