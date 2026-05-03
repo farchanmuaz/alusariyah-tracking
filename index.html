@@ -1482,8 +1482,7 @@ async function syncAllToSheets() {
   setSyncState('syncing', 'Sedang sync ' + articles.length + ' artikel...');
   document.getElementById('btnSyncAll').disabled = true;
   try {
-    await postToSheets({ action: 'sync', articles: articles });
-    await postToSheets({ action: 'syncPersonnel', personnel: personnel });
+    await postToSheets({ action: 'syncAll', articles: articles, personnel: personnel });
     setSyncState('connected', 'Sync selesai ✓ — ' + articles.length + ' artikel');
     setLastSyncTime();
     showToast('Sync ke Google Sheets berhasil!', 'success');
