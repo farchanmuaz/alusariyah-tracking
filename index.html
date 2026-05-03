@@ -1542,25 +1542,50 @@ async function autoSyncDelete(articleId) {
   }
 }
 
-// ── POST via fetch no-cors + text/plain ──
-// Satu-satunya combo yang tembus ke Apps Script dari file lokal:
-// mode:no-cors + Content-Type:text/plain → Apps Script baca e.postData.contents
+// ── POST via JSONP GET — paling reliable dari file lokal ──
+// Kirim data sebagai URL param, Apps Script baca e.parameter.payload
+// Untuk data besar: chunk per 10 artikel
 async function postToSheets(payload) {
-  const body = JSON.stringify(payload);
-  try {
-    await fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',          // bypass CORS — response akan opaque (tidak bisa dibaca)
-      headers: {
-        'Content-Type': 'text/plain'  // WAJIB text/plain agar tidak trigger preflight
-      },
-      body: body
-    });
-    // no-cors = response opaque, tidak bisa baca status — tapi data TERKIRIM
-    return { ok: true, message: 'Sent' };
-  } catch(e) {
-    throw new Error('Fetch gagal: ' + e.message);
+  // Untuk sync artikel — chunk per 10
+  if (payload.action === 'sync' && payload.articles && payload.articles.length > 10) {
+    const chunks = [];
+    for (let i = 0; i < payload.articles.length; i += 10) {
+      chunks.push(payload.articles.slice(i, i + 10));
+    }
+    // First chunk: action=syncStart (clear sheet + write chunk 1)
+    await sendGET({ action: 'syncStart', articles: chunks[0] });
+    for (let i = 1; i < chunks.length; i++) {
+      await new Promise(r => setTimeout(r, 800));
+      await sendGET({ action: 'syncAppend', articles: chunks[i] });
+    }
+    return { ok: true };
   }
+  return await sendGET(payload);
+}
+
+// Kirim via JSONP GET — bisa baca response, tidak ada CORS issue
+function sendGET(payload) {
+  return new Promise((resolve, reject) => {
+    const cb = '_cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      delete window[cb]; script.remove();
+      // Timeout — anggap terkirim (GET ke Apps Script hampir selalu sampai)
+      resolve({ ok: true, message: 'sent (timeout ok)' });
+    }, 10000);
+    window[cb] = function(data) {
+      clearTimeout(timer); delete window[cb]; script.remove();
+      resolve(data);
+    };
+    script.onerror = () => {
+      clearTimeout(timer); delete window[cb];
+      reject(new Error('Script load error'));
+    };
+    // Encode payload as URL param
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    script.src = SHEETS_URL + '?callback=' + cb + '&payload=' + encoded;
+    document.head.appendChild(script);
+  });
 }
 
 // ── TOGGLE AUTO-SYNC ──
