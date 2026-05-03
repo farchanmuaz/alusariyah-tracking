@@ -720,6 +720,20 @@ function loadAll() {
 // --- INIT ---
 checkStorage();
 loadAll();
+// Fix any old-format dates in localStorage
+articles = articles.map(a => {
+  if (a.date && a.date.length > 10) {
+    const d = new Date(a.date);
+    if (!isNaN(d.getTime())) {
+      const yyyy = d.getFullYear();
+      const mm   = String(d.getMonth()+1).padStart(2,'0');
+      const dd   = String(d.getDate()).padStart(2,'0');
+      a.date = yyyy+'-'+mm+'-'+dd;
+    }
+  }
+  return a;
+});
+saveArticles();
 document.getElementById('fieldDate').valueAsDate = new Date();
 addAuthorField(); // Add first author field
 renderAll();
@@ -1479,13 +1493,22 @@ function pingViaIframe() {
 // ── SYNC SEMUA ARTIKEL ──
 async function syncAllToSheets() {
   if (!sheetsConnected) { showToast('Hubungkan dulu ke Google Sheets', 'error'); return; }
-  setSyncState('syncing', 'Sedang sync ' + articles.length + ' artikel...');
   document.getElementById('btnSyncAll').disabled = true;
   try {
-    await postToSheets({ action: 'syncAll', articles: articles, personnel: personnel });
+    // Step 1: sync artikel
+    setSyncState('syncing', 'Sync artikel (' + articles.length + ')...');
+    await postToSheets({ action: 'sync', articles: articles });
+
+    // Delay 1.5s antar request — Apps Script butuh jeda
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Step 2: sync personel
+    setSyncState('syncing', 'Sync personel...');
+    await postToSheets({ action: 'syncPersonnel', personnel: personnel });
+
     setSyncState('connected', 'Sync selesai ✓ — ' + articles.length + ' artikel');
     setLastSyncTime();
-    showToast('Sync ke Google Sheets berhasil!', 'success');
+    showToast('Sync berhasil!', 'success');
   } catch(e) {
     setSyncState('error', 'Sync gagal: ' + e.message);
     showToast('Sync gagal: ' + e.message, 'error');
