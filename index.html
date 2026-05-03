@@ -1483,6 +1483,7 @@ async function syncAllToSheets() {
   document.getElementById('btnSyncAll').disabled = true;
   try {
     await postToSheets({ action: 'sync', articles: articles });
+    await postToSheets({ action: 'syncPersonnel', personnel: personnel });
     setSyncState('connected', 'Sync selesai ✓ — ' + articles.length + ' artikel');
     setLastSyncTime();
     showToast('Sync ke Google Sheets berhasil!', 'success');
@@ -1578,21 +1579,32 @@ async function pullFromSheets() {
       return;
     }
 
-    // Merge: tambah artikel dari Sheets yang belum ada di lokal (by id)
+    // Merge artikel
     const localIds = new Set(articles.map(a => a.id));
     let added = 0;
     incoming.forEach(a => {
-      if (!localIds.has(a.id)) {
-        articles.push(a);
-        added++;
-      }
+      if (!localIds.has(a.id)) { articles.push(a); added++; }
     });
-
     saveArticles();
+
+    // Tarik personel juga
+    const pData = await getFromSheets({ action: 'getPersonnel' });
+    if (pData.ok && pData.personnel) {
+      // Merge personel — tambah nama yang belum ada
+      ['editor','reviewer','layout'].forEach(role => {
+        const incoming = pData.personnel[role] || [];
+        incoming.forEach(name => {
+          if (!personnel[role].includes(name)) personnel[role].push(name);
+        });
+      });
+      savePersonnel();
+      renderPersonnel();
+    }
+
     renderAll();
-    setSyncState('connected', 'Tarik selesai ✓ — ' + added + ' artikel baru');
+    setSyncState('connected', 'Tarik selesai ✓ — ' + added + ' artikel, personel diperbarui');
     setLastSyncTime();
-    showToast('Berhasil tarik ' + added + ' artikel baru dari Sheets!', 'success');
+    showToast('Berhasil tarik dari Sheets!', 'success');
   } catch(e) {
     setSyncState('error', 'Tarik gagal: ' + e.message);
     showToast('Tarik gagal: ' + e.message, 'error');
