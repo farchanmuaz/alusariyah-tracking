@@ -1,684 +1,475 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Al Usariyah — Journal Article Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-200:#85B7EB;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;--blue-900:#042C53;
-    --gray-50:#F7F8FA;--gray-100:#EEF0F3;--gray-200:#D8DBE2;--gray-400:#9EA4B0;--gray-600:#5C6270;--gray-800:#2E3340;--gray-900:#1A1E28;
-    --green-50:#EAF3DE;--green-100:#C0DD97;--green-600:#3B6D11;--green-800:#27500A;
-    --red-50:#FCEBEB;--red-600:#A32D2D;
-    --amber-50:#FAEEDA;--amber-100:#FAC775;--amber-600:#854F0B;--amber-800:#633806;
-    --teal-50:#E1F5EE;--teal-600:#0F6E56;--teal-800:#085041;
-    --purple-50:#EEEDFE;--purple-600:#534AB7;--purple-800:#3C3489;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 15px;
-    background: var(--gray-50);
-    color: var(--gray-800);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* HEADER */
-  .app-header{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
-  .brand{display:flex;align-items:center;gap:12px;}
-  .brand-icon{width:32px;height:32px;background:var(--blue-600);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-  .brand-icon svg{width:18px;height:18px;fill:#fff;}
-  .brand-name{font-family:'Lora',serif;font-weight:600;font-size:17px;color:var(--gray-900);}
-  .brand-sub{font-size:12px;color:var(--gray-400);}
-  .header-stats{display:flex;gap:1.5rem;align-items:center;}
-  .stat-pill{font-size:13px;color:var(--gray-600);display:flex;align-items:center;gap:6px;}
-  .stat-pill strong{font-weight:600;color:var(--gray-800);}
-
-  /* NAV TABS */
-  .app-nav{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;gap:0;}
-  .nav-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--gray-600);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;white-space:nowrap;}
-  .nav-tab:hover{color:var(--blue-600);}
-  .nav-tab.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
-
-  /* PAGES */
-  .page{display:none;}.page.active{display:block;}
-
-  /* LAYOUT */
-  .app-body{max-width:1200px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start;}
-  .app-body-full{max-width:1200px;margin:0 auto;padding:2rem;}
-
-  /* PANEL */
-  .panel{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;}
-  .panel-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
-  .panel-title{font-family:'Lora',serif;font-size:14px;font-weight:600;color:var(--gray-900);}
-  .panel-subtitle{font-size:12px;color:var(--gray-400);margin-top:2px;}
-  .panel-body{padding:1.25rem;}
-
-  /* FORM */
-  .form-group{margin-bottom:1rem;}
-  label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
-  .label-id{color:var(--gray-400);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px;margin-left:4px;}
-  input[type="text"],input[type="date"],select{width:100%;padding:8px 10px;font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--gray-800);background:#fff;border:1px solid var(--gray-200);border-radius:6px;outline:none;transition:border-color 0.15s;}
-  input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--blue-50);}
-  .validation-msg{font-size:12px;color:var(--red-600);margin-top:4px;display:none;}
-  .validation-msg.show{display:block;}
-
-  /* BUTTONS */
-  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:500;border-radius:6px;border:1px solid;cursor:pointer;transition:all 0.15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:36px;}
-  .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--blue-600);border-color:var(--blue-600);color:#fff;width:100%;justify-content:center;padding:10px;font-size:14px;}
-  .btn-primary:hover{background:var(--blue-800);border-color:var(--blue-800);}
-  .btn-sm{padding:5px 10px;font-size:12px;border-radius:5px;}
-  .btn-review{background:var(--teal-50);border-color:var(--teal-600);color:var(--teal-800);}
-  .btn-review:hover{background:#c3e8da;}
-  .btn-reject{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
-  .btn-reject:hover{background:#f9d4d4;}
-  .btn-edit{background:var(--amber-50);border-color:var(--amber-600);color:var(--amber-600);}
-  .btn-edit:hover{background:#f5e0bd;}
-  .btn-delete{background:#fff;border-color:var(--gray-200);color:var(--gray-600);}
-  .btn-delete:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
-  .btn-save{background:var(--blue-50);border-color:var(--blue-400);color:var(--blue-800);}
-  .btn-save:hover{background:var(--blue-100);}
-
-  /* FILTER BAR */
-  .filter-bar{display:flex;gap:8px;padding:0.75rem 1.25rem;background:var(--gray-50);border-bottom:1px solid var(--gray-100);overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .filter-btn{padding:4px 12px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);cursor:pointer;white-space:nowrap;transition:all 0.15s;font-family:'Source Sans 3',sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:28px;}
-  .filter-btn:hover{border-color:var(--blue-400);color:var(--blue-800);}
-  .filter-btn.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;}
-
-  /* ARTICLE CARDS */
-  .articles-list{padding:1rem;display:flex;flex-direction:column;gap:10px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-  .article-card{border:1px solid var(--gray-200);border-radius:10px;background:#fff;overflow:hidden;transition:box-shadow 0.15s,border-color 0.15s;}
-  .article-card:hover{border-color:var(--blue-200);box-shadow:0 2px 12px rgba(55,138,221,0.08);}
-  .article-card-header{padding:0.875rem 1rem 0.75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-  .article-title{font-family:'Lora',serif;font-size:14px;font-weight:500;color:var(--gray-900);line-height:1.4;flex:1;}
-  .status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;}
-  .badge-submitted{background:var(--blue-50);color:var(--blue-800);border:1px solid var(--blue-100);}
-  .badge-review{background:var(--teal-50);color:var(--teal-800);border:1px solid #9FE1CB;}
-  .badge-rejected{background:var(--red-50);color:var(--red-600);border:1px solid #F7C1C1;}
-  .badge-published{background:var(--green-50);color:var(--green-800);border:1px solid var(--green-100);}
-  .article-meta{padding:0 1rem 0.75rem;display:flex;flex-wrap:wrap;gap:12px;}
-  .meta-item{font-size:12px;color:var(--gray-600);display:flex;align-items:center;gap:4px;}
-  .meta-item svg{width:12px;height:12px;opacity:0.6;}
-  .article-card-body{border-top:1px solid var(--gray-100);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-
-  /* CHECKLIST */
-  .checklist{display:flex;gap:8px;flex-wrap:wrap;}
-  .check-item{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid var(--gray-200);transition:all 0.15s;user-select:none;}
-  .check-item:hover{border-color:var(--blue-400);}
-  .check-item.checked{background:var(--green-50);border-color:#9FD76B;color:var(--green-600);}
-  .check-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--gray-400);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .check-item.checked .check-dot{background:var(--green-600);border-color:var(--green-600);}
-  .check-dot-inner{width:5px;height:5px;border-radius:50%;background:#fff;opacity:0;}
-  .check-item.checked .check-dot-inner{opacity:1;}
-  .card-actions{display:flex;gap:6px;flex-wrap:wrap;}
-
-  /* REVIEW INFO */
-  .review-section{border-top:1px solid var(--gray-100);padding:0.75rem 1rem;background:var(--blue-50);}
-  .review-section-title{font-size:11px;font-weight:600;color:var(--blue-800);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;}
-  .review-info-item{font-size:12px;}
-  .review-info-label{color:var(--gray-400);margin-bottom:2px;}
-  .review-info-value{color:var(--gray-800);font-weight:500;}
-
-  /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(26,30,40,0.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-  .modal-overlay.open{opacity:1;pointer-events:all;}
-  .modal{background:#fff;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;transform:translateY(8px);transition:transform 0.2s;}
-  .modal-overlay.open .modal{transform:translateY(0);}
-  .modal-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
-  .modal-title{font-family:'Lora',serif;font-size:15px;font-weight:600;}
-  .modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);border-radius:6px;cursor:pointer;background:#fff;font-size:16px;color:var(--gray-600);}
-  .modal-close:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
-  .modal-body{padding:1.25rem;}
-  .modal-footer{padding:1rem 1.25rem;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;}
-
-  /* PERSONNEL MANAGEMENT */
-  .personnel-section{margin-bottom:1.5rem;}
-  .personnel-section:last-child{margin-bottom:0;}
-  .personnel-section-title{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
-  .personnel-list{display:flex;flex-direction:column;gap:6px;}
-  .personnel-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;font-size:13px;}
-  .personnel-name{font-weight:500;color:var(--gray-800);}
-  .personnel-role{font-size:11px;color:var(--gray-400);}
-  .add-personnel-row{display:flex;gap:6px;margin-top:6px;}
-  .add-personnel-row input{flex:1;padding:6px 10px;font-size:13px;}
-  .btn-add-mini{padding:6px 12px;font-size:12px;background:var(--blue-50);border:1px solid var(--blue-400);color:var(--blue-800);border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:500;white-space:nowrap;}
-  .btn-add-mini:hover{background:var(--blue-100);}
-  .author-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:start;}
-  .author-row input{margin:0;}
-  .btn-remove-author{padding:8px 10px;font-size:12px;background:var(--red-50);border:1px solid var(--red-600);color:var(--red-600);border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:500;}
-  .btn-remove-author:hover{background:#f9d4d4;}
-  .btn-publish{background:var(--green-600);border-color:var(--green-600);color:#fff;}
-  .btn-publish:hover{background:var(--green-800);border-color:var(--green-800);}
-  .issue-divider{height:2px;background:linear-gradient(to right,var(--blue-400),var(--purple-600));margin:1rem 0;position:relative;}
-  .issue-divider-label{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#fff;padding:2px 12px;font-size:11px;font-weight:600;color:var(--blue-600);border:1px solid var(--blue-200);border-radius:12px;white-space:nowrap;}
-
-  /* FUNDING DASHBOARD */
-  .funding-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
-  .fund-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem;text-align:center;}
-  .fund-card-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-  .fund-card-value{font-size:22px;font-weight:600;color:var(--gray-900);}
-  .fund-card-sub{font-size:11px;color:var(--gray-400);margin-top:3px;}
-  .fund-card.accent-blue .fund-card-value{color:var(--blue-600);}
-  .fund-card.accent-amber .fund-card-value{color:var(--amber-600);}
-  .fund-card.accent-green .fund-card-value{color:var(--green-600);}
-  .fund-card.accent-purple .fund-card-value{color:var(--purple-600);}
-
-  .funding-table-wrap{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;}
-  .funding-table-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
-  .funding-table{width:100%;border-collapse:collapse;font-size:13px;}
-  .funding-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);}
-  .funding-table td{padding:10px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-800);vertical-align:middle;}
-  .funding-table tr:last-child td{border-bottom:none;}
-  .funding-table tr:hover td{background:var(--gray-50);}
-  .role-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
-  .role-editor{background:var(--blue-50);color:var(--blue-800);}
-  .role-reviewer{background:var(--teal-50);color:var(--teal-800);}
-  .role-layout{background:var(--purple-50);color:var(--purple-800);}
-  .fund-status-badge{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;}
-  .fund-pending{background:var(--amber-50);color:var(--amber-800);}
-  .fund-paid{background:var(--green-50);color:var(--green-800);}
-  .amount-cell{font-weight:600;color:var(--gray-900);}
-  .amount-tbd{color:var(--gray-400);font-style:italic;font-weight:400;}
-  .empty-funding{text-align:center;padding:3rem 1rem;color:var(--gray-400);}
-  .empty-funding p{font-size:14px;}
-
-  /* TOAST */
-  .toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:8px;}
-  .toast{background:var(--gray-900);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;animation:toast-in 0.2s ease;max-width:320px;}
-  .toast.success{background:var(--green-800);}
-  .toast.error{background:var(--red-600);}
-  @keyframes toast-in{from{transform:translateY(8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
-  /* MISC */
-  .compat-warning{background:var(--amber-50);border:1px solid var(--amber-600);border-radius:8px;padding:1rem 1.25rem;margin:1rem;font-size:13px;color:var(--amber-600);display:none;}
-  .compat-warning.show{display:block;}
-  .form-divider{height:1px;background:var(--gray-100);margin:1rem 0;}
-  .form-mode-indicator{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--blue-50);color:var(--blue-800);font-weight:600;display:none;}
-  .form-mode-indicator.show{display:inline-block;}
-  .empty-state{text-align:center;padding:3rem 1rem;color:var(--gray-400);}
-  .empty-state svg{width:40px;height:40px;margin-bottom:1rem;opacity:0.4;}
-  .empty-state p{font-size:14px;}
-  .section-divider{height:1px;background:var(--gray-100);margin:1.25rem 0;}
-
-  @media(max-width:768px){
-    .app-header{padding:0 1rem;height:auto;min-height:60px;flex-wrap:wrap;}
-    .brand{flex:1;}
-    .brand-name{font-size:15px;}
-    .brand-sub{font-size:11px;}
-    .header-stats{display:none;}
-    
-    .app-nav{padding:0 1rem;overflow-x:auto;white-space:nowrap;}
-    .nav-tab{padding:8px 14px;font-size:12px;}
-    
-    .app-body{grid-template-columns:1fr;padding:1rem;gap:1rem;}
-    .app-body-full{padding:1rem;}
-    
-    .panel-header{padding:0.875rem 1rem;flex-direction:column;align-items:flex-start;gap:8px;}
-    .panel-body{padding:1rem;}
-    
-    .form-group input, .form-group select{font-size:16px;} /* Prevent zoom on iOS */
-    
-    .author-row{grid-template-columns:1fr;gap:8px;}
-    .author-row input{width:100%;}
-    .btn-remove-author{width:100%;justify-content:center;}
-    
-    .filter-bar{padding:0.625rem 1rem;gap:6px;flex-wrap:wrap;}
-    .filter-btn{font-size:11px;padding:3px 10px;}
-    #filterAffiliation, #filterIssue, #searchInput{width:100%;margin:4px 0 0 0;}
-    
-    .article-card-header{padding:0.75rem 0.875rem;flex-direction:column;align-items:flex-start;gap:6px;}
-    .article-title{font-size:13px;}
-    .status-badge{font-size:10px;padding:2px 8px;}
-    
-    .article-meta{padding:0 0.875rem 0.625rem;gap:8px;font-size:11px;}
-    .meta-item{font-size:11px;}
-    .meta-item svg{width:11px;height:11px;}
-    
-    .article-card-body{padding:0.625rem 0.875rem;flex-direction:column;align-items:stretch;}
-    .checklist{width:100%;justify-content:flex-start;}
-    .card-actions{width:100%;justify-content:flex-start;margin-top:8px;}
-    .btn-sm{font-size:11px;padding:4px 8px;}
-    
-    .review-section{padding:0.625rem 0.875rem;}
-    .review-section-title{font-size:10px;}
-    .review-info-item{font-size:11px;}
-    
-    .modal{max-width:95%;margin:0 1rem;}
-    .modal-header{padding:0.875rem 1rem;}
-    .modal-title{font-size:14px;}
-    .modal-body{padding:1rem;}
-    .modal-footer{padding:0.875rem 1rem;flex-direction:column;}
-    .modal-footer .btn{width:100%;}
-    
-    .funding-summary{grid-template-columns:repeat(2,1fr);gap:8px;}
-    .fund-card{padding:0.75rem;}
-    .fund-card-label{font-size:10px;}
-    .fund-card-value{font-size:18px;}
-    .fund-card-sub{font-size:10px;}
-    
-    .funding-table-header{padding:0.875rem 1rem;flex-direction:column;align-items:stretch;gap:8px;}
-    .funding-table-header > div:last-child{flex-direction:column;gap:6px;}
-    .funding-table-header input, .funding-table-header select, .funding-table-header .btn{width:100%;}
-    
-    .funding-table-wrap{overflow-x:auto;}
-    .funding-table{font-size:11px;min-width:600px;}
-    .funding-table th, .funding-table td{padding:8px 10px;}
-    .funding-table th{font-size:10px;}
-    
-    .personnel-section-title{font-size:11px;}
-    .personnel-item{padding:6px 8px;font-size:12px;}
-    .personnel-name{font-size:12px;}
-    .personnel-role{font-size:10px;}
-    .add-personnel-row{flex-direction:column;}
-    .add-personnel-row input{width:100%;}
-    .btn-add-mini{width:100%;}
-    
-    .issue-divider-label{font-size:10px;padding:2px 10px;}
-    
-    .empty-state{padding:2rem 1rem;}
-    .empty-state svg{width:32px;height:32px;}
-    .empty-state p{font-size:13px;}
-    
-    .toast-container{bottom:1rem;right:1rem;left:1rem;}
-    .toast{font-size:12px;padding:8px 12px;}
-  }
-
-  /* SYNC STATUS */
-  .sync-bar{display:flex;align-items:center;gap:10px;padding:6px 2rem;background:#fff;border-bottom:1px solid var(--gray-100);font-size:12px;color:var(--gray-600);}
-  .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-300);flex-shrink:0;transition:background .3s;}
-  .sync-dot.connected{background:#3B6D11;}
-  .sync-dot.syncing{background:var(--amber-600);animation:pulse .8s infinite;}
-  .sync-dot.error{background:var(--red-600);}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  .sync-label{font-weight:500;}
-  .btn-sync{padding:3px 10px;font-size:11px;font-weight:600;background:var(--blue-50);border:1px solid var(--blue-400);color:var(--blue-800);border-radius:4px;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
-  .btn-sync:hover{background:var(--blue-100);}
-  .btn-sync:disabled{opacity:.5;cursor:not-allowed;}
-
-
-  /* STAT SUMMARY CARDS */
-  .stat-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:4px;}
-  .stat-card-val{font-size:28px;font-weight:700;color:var(--gray-900);line-height:1;}
-  .stat-card-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;}
-  .stat-card-sub{font-size:12px;color:var(--gray-600);}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al Usariyah — Journal Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-200:#85B7EB;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;--blue-900:#042C53;
+  --gray-50:#F7F8FA;--gray-100:#EEF0F3;--gray-200:#D8DBE2;--gray-400:#9EA4B0;--gray-600:#5C6270;--gray-800:#2E3340;--gray-900:#1A1E28;
+  --green-50:#EAF3DE;--green-100:#C0DD97;--green-600:#3B6D11;--green-800:#27500A;
+  --red-50:#FCEBEB;--red-200:#F7C1C1;--red-600:#A32D2D;
+  --amber-50:#FAEEDA;--amber-600:#854F0B;--amber-800:#633806;
+  --teal-50:#E1F5EE;--teal-600:#0F6E56;--teal-800:#085041;
+  --purple-50:#EEEDFE;--purple-600:#534AB7;--purple-800:#3C3489;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;font-size:15px;background:var(--gray-50);color:var(--gray-800);min-height:100vh;}
+
+/* ── LOGIN SCREEN ── */
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue-900) 0%,var(--blue-700,#1e6fb5) 50%,var(--blue-800) 100%);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s;}
+.login-screen.hidden{opacity:0;pointer-events:none;}
+.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(4,44,83,.35);}
+.login-logo{text-align:center;margin-bottom:1.75rem;}
+.login-logo-icon{width:52px;height:52px;background:var(--blue-600);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.login-logo-icon svg{width:26px;height:26px;fill:#fff;}
+.login-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--gray-900);}
+.login-sub{font-size:13px;color:var(--gray-400);margin-top:3px;}
+.login-form .form-group{margin-bottom:.875rem;}
+.login-form label{display:block;font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.login-form input{width:100%;padding:9px 12px;font-family:'Source Sans 3',sans-serif;font-size:14px;border:1px solid var(--gray-200);border-radius:8px;outline:none;transition:border-color .15s;}
+.login-form input:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--blue-50);}
+.login-error{font-size:12px;color:var(--red-600);background:var(--red-50);border:1px solid var(--red-200);border-radius:6px;padding:8px 12px;margin-bottom:.875rem;display:none;}
+.login-error.show{display:block;}
+.btn-login{width:100%;padding:11px;background:var(--blue-600);color:#fff;border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.5rem;}
+.btn-login:hover{background:var(--blue-800);}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;}
+
+/* ── APP ── */
+.app-header{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{width:32px;height:32px;background:var(--blue-600);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.brand-icon svg{width:18px;height:18px;fill:#fff;}
+.brand-name{font-family:'Lora',serif;font-weight:600;font-size:17px;color:var(--gray-900);}
+.brand-sub{font-size:12px;color:var(--gray-400);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.user-badge{font-size:12px;color:var(--gray-600);background:var(--gray-100);padding:4px 10px;border-radius:20px;}
+.btn-logout{padding:5px 12px;font-size:12px;background:#fff;border:1px solid var(--gray-200);color:var(--gray-600);border-radius:6px;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
+.btn-logout:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
+.header-stats{display:flex;gap:1.5rem;align-items:center;}
+.stat-pill{font-size:13px;color:var(--gray-600);display:flex;align-items:center;gap:5px;}
+.stat-pill strong{font-weight:600;color:var(--gray-800);}
+
+.app-nav{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;}
+.nav-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--gray-600);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;font-family:'Source Sans 3',sans-serif;transition:all .15s;white-space:nowrap;}
+.nav-tab:hover{color:var(--blue-600);}
+.nav-tab.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
+
+/* DB STATUS BAR */
+.db-bar{display:flex;align-items:center;gap:8px;padding:5px 2rem;background:#fff;border-bottom:1px solid var(--gray-100);font-size:12px;flex-wrap:wrap;}
+.db-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-300);flex-shrink:0;}
+.db-dot.ok{background:var(--green-600);}
+.db-dot.err{background:var(--red-600);}
+.db-dot.loading{background:var(--amber-600);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-import-sm{padding:3px 10px;font-size:11px;font-weight:600;border-radius:4px;border:1px solid;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;}
+
+.page{display:none;}.page.active{display:block;}
+.app-body{max-width:1200px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start;}
+.app-body-full{max-width:1200px;margin:0 auto;padding:2rem;}
+
+.panel{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;}
+.panel-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Lora',serif;font-size:14px;font-weight:600;color:var(--gray-900);}
+.panel-subtitle{font-size:12px;color:var(--gray-400);margin-top:2px;}
+.panel-body{padding:1.25rem;}
+
+label.field-label{display:block;font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.opt{color:var(--gray-400);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:3px;}
+.form-group{margin-bottom:.875rem;}
+input[type="text"],input[type="email"],input[type="url"],input[type="date"],select{width:100%;padding:7px 10px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--gray-800);background:#fff;border:1px solid var(--gray-200);border-radius:6px;outline:none;transition:border-color .15s;}
+input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--blue-50);}
+.validation-msg{font-size:11px;color:var(--red-600);margin-top:3px;display:none;}
+.validation-msg.show{display:block;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:500;border-radius:6px;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--blue-600);border-color:var(--blue-600);color:#fff;width:100%;justify-content:center;padding:9px;font-size:14px;}
+.btn-primary:hover{background:var(--blue-800);}
+.btn-sm{padding:4px 9px;font-size:12px;border-radius:5px;}
+.btn-xs{padding:3px 7px;font-size:11px;border-radius:4px;}
+.btn-review{background:var(--teal-50);border-color:var(--teal-600);color:var(--teal-800);}
+.btn-review:hover{background:#c3e8da;}
+.btn-reject{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
+.btn-edit{background:var(--amber-50);border-color:var(--amber-600);color:var(--amber-600);}
+.btn-delete{background:#fff;border-color:var(--gray-200);color:var(--gray-600);}
+.btn-delete:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
+.btn-save{background:var(--blue-50);border-color:var(--blue-400);color:var(--blue-800);}
+.btn-publish{background:var(--green-600);border-color:var(--green-600);color:#fff;}
+.btn-publish:hover{background:var(--green-800);}
+
+.filter-bar{display:flex;gap:8px;padding:.75rem 1.25rem;background:var(--gray-50);border-bottom:1px solid var(--gray-100);overflow-x:auto;flex-wrap:wrap;}
+.filter-btn{padding:3px 11px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Source Sans 3',sans-serif;}
+.filter-btn:hover{border-color:var(--blue-400);color:var(--blue-800);}
+.filter-btn.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;}
+.adv-filters{padding:.75rem 1.25rem;background:#fff;border-bottom:1px solid var(--gray-100);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.adv-filters select,.adv-filters input{width:auto;padding:4px 8px;font-size:12px;}
+.bulk-actions{padding:.75rem 1.25rem;background:#fff;border-bottom:1px solid var(--gray-100);display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.bulk-actions label{font-size:12px;color:var(--gray-600);display:flex;align-items:center;gap:6px;}
+.bulk-actions input[type="checkbox"]{width:16px;height:16px;margin:0;}
+.bulk-checkbox{display:flex;align-items:center;margin-right:12px;}
+.articles-list{padding:1rem;display:flex;flex-direction:column;gap:10px;}
+.article-card{border:1px solid var(--gray-200);border-radius:10px;background:#fff;overflow:hidden;transition:box-shadow .15s,border-color .15s;}
+.article-card:hover{border-color:var(--blue-200);box-shadow:0 2px 12px rgba(55,138,221,.08);}
+.article-card-header{padding:.875rem 1rem .75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.article-title{font-family:'Lora',serif;font-size:14px;font-weight:500;color:var(--gray-900);line-height:1.4;flex:1;}
+.status-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;}
+.badge-submitted{background:var(--blue-50);color:var(--blue-800);border:1px solid var(--blue-100);}
+.badge-review{background:var(--teal-50);color:var(--teal-800);border:1px solid #9FE1CB;}
+.badge-rejected{background:var(--red-50);color:var(--red-600);border:1px solid var(--red-200);}
+.badge-published{background:var(--green-50);color:var(--green-800);border:1px solid var(--green-100);}
+.article-meta{padding:0 1rem .625rem;display:flex;flex-wrap:wrap;gap:10px;}
+.meta-item{font-size:12px;color:var(--gray-600);display:flex;align-items:center;gap:4px;}
+.meta-item svg{width:12px;height:12px;opacity:.6;flex-shrink:0;}
+.article-card-body{border-top:1px solid var(--gray-100);padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.card-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+
+.authors-box{border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;margin-top:4px;}
+.author-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:8px 10px;border-bottom:1px solid var(--gray-100);align-items:center;}
+.author-row:last-child{border-bottom:none;}
+.author-row input{padding:5px 8px;font-size:13px;}
+.author-email-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:4px 10px 8px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);}
+.author-email-row input{padding:4px 8px;font-size:12px;}
+.add-author-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;color:var(--blue-600);background:var(--blue-50);border:none;border-top:1px solid var(--gray-100);cursor:pointer;width:100%;font-family:'Source Sans 3',sans-serif;font-weight:500;}
+.add-author-btn:hover{background:var(--blue-100);}
+.author-remove{width:24px;height:24px;border:1px solid var(--gray-200);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;color:var(--gray-400);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.author-remove:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
+
+.checklist{display:flex;gap:8px;flex-wrap:wrap;}
+.check-item{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid var(--gray-200);transition:all .15s;user-select:none;}
+.check-item.checked{background:var(--green-50);border-color:#9FD76B;color:var(--green-600);}
+.check-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--gray-400);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.check-item.checked .check-dot{background:var(--green-600);border-color:var(--green-600);}
+.check-dot-inner{width:5px;height:5px;border-radius:50%;background:#fff;opacity:0;}
+.check-item.checked .check-dot-inner{opacity:1;}
+
+.review-section{border-top:1px solid var(--gray-100);padding:.75rem 1rem;background:var(--blue-50);}
+.review-section-title{font-size:10px;font-weight:600;color:var(--blue-800);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;}
+.ri-item{font-size:12px;}
+.ri-label{color:var(--gray-400);margin-bottom:1px;font-size:11px;}
+.ri-value{color:var(--gray-800);font-weight:500;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(26,30,40,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;transform:translateY(8px);transition:transform .2s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10;}
+.modal-title{font-family:'Lora',serif;font-size:15px;font-weight:600;}
+.modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);border-radius:6px;cursor:pointer;background:#fff;font-size:16px;color:var(--gray-600);}
+.modal-close:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
+.modal-body{padding:1.25rem;}
+.modal-footer{padding:1rem 1.25rem;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:#fff;}
+.modal-section-label{font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;margin-top:1.25rem;padding-bottom:4px;border-bottom:1px solid var(--gray-100);}
+.modal-section-label:first-child{margin-top:0;}
+.required-star{color:var(--red-600);}
+
+.personnel-list{display:flex;flex-direction:column;gap:6px;}
+.personnel-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;font-size:13px;}
+.personnel-name-input{font-weight:500;border:none;background:none;outline:none;width:100%;font-size:13px;font-family:'Source Sans 3',sans-serif;}
+.personnel-name-input[readonly]{cursor:pointer;}
+.personnel-name-input[readonly]:hover{background:var(--gray-50);}
+.personnel-name-input:not([readonly]){border:1px solid var(--blue-400);background:#fff;padding:2px 4px;border-radius:3px;}
+.personnel-role{font-size:11px;color:var(--gray-400);}
+.personnel-actions{display:flex;gap:4px;}
+.add-personnel-row{display:flex;gap:6px;margin-top:8px;}
+.add-personnel-row input{flex:1;padding:6px 10px;font-size:13px;}
+.btn-add-mini{padding:6px 12px;font-size:12px;background:var(--blue-50);border:1px solid var(--blue-400);color:var(--blue-800);border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:500;}
+.btn-add-mini:hover{background:var(--blue-100);}
+
+.funding-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem;}
+.fund-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem;text-align:center;}
+.fund-card-label{font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fund-card-value{font-size:22px;font-weight:600;color:var(--gray-900);}
+.fund-card.ac-blue .fund-card-value{color:var(--blue-600);}
+.fund-card.ac-green .fund-card-value{color:var(--green-600);}
+.fund-card.ac-purple .fund-card-value{color:var(--purple-600);}
+.fund-card.ac-amber .fund-card-value{color:var(--amber-600);}
+.issue-group{margin-bottom:1.5rem;}
+.issue-group-header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px 8px 0 0;border-bottom:2px solid var(--blue-400);}
+.issue-group-title{font-size:13px;font-weight:600;color:var(--blue-800);font-family:'Lora',serif;}
+.funding-table-wrap{border:1px solid var(--gray-200);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;background:#fff;}
+.funding-table{width:100%;border-collapse:collapse;font-size:13px;}
+.funding-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);}
+.funding-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-800);vertical-align:middle;}
+.funding-table tr:last-child td{border-bottom:none;}
+.funding-table tr:hover td{background:var(--gray-50);}
+.role-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.role-editor{background:var(--blue-50);color:var(--blue-800);}
+.role-reviewer{background:var(--teal-50);color:var(--teal-800);}
+.role-layout{background:var(--purple-50);color:var(--purple-800);}
+.fund-pending{background:var(--amber-50);color:var(--amber-800);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.amount-tbd{color:var(--gray-400);font-style:italic;}
+
+.stat-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem 1.25rem;}
+.stat-card-val{font-size:28px;font-weight:700;line-height:1;}
+.stat-card-label{font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.stat-card-sub{font-size:12px;color:var(--gray-600);}
+
+.import-modal{position:fixed;inset:0;background:rgba(26,30,40,.55);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.import-modal.open{opacity:1;pointer-events:all;}
+.import-preview{overflow:auto;max-height:280px;border:1px solid var(--gray-200);border-radius:6px;margin-top:.75rem;}
+.import-preview table{width:100%;border-collapse:collapse;font-size:12px;}
+.import-preview th{background:var(--blue-600);color:#fff;padding:6px 10px;text-align:left;white-space:nowrap;}
+.import-preview td{padding:5px 10px;border-bottom:1px solid var(--gray-100);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;}
+.import-warning{font-size:12px;color:var(--amber-600);background:var(--amber-50);border:1px solid var(--amber-100);border-radius:5px;padding:6px 10px;margin-bottom:8px;}
+
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--gray-900);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;animation:toast-in .2s ease;max-width:320px;}
+.toast.success{background:var(--green-800);}
+.toast.error{background:var(--red-600);}
+@keyframes toast-in{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.form-mode-indicator{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--blue-50);color:var(--blue-800);font-weight:600;display:none;}
+.form-mode-indicator.show{display:inline-block;}
+.form-divider{height:1px;background:var(--gray-100);margin:.875rem 0;}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--gray-400);}
+.empty-state svg{width:40px;height:40px;margin-bottom:1rem;opacity:.4;}
+.empty-state p{font-size:14px;}
+.loading-row{text-align:center;padding:2rem;color:var(--gray-400);font-size:13px;}
+
+@media(max-width:768px){.app-body{grid-template-columns:1fr;padding:1rem;}.header-stats{display:none;}.funding-summary{grid-template-columns:repeat(2,1fr);}}
+</style>
 </head>
 <body>
 
-<div class="compat-warning" id="compatWarning">
-  —Üá∩╕Å Browser tidak mendukung Local Storage. Gunakan Chrome 90+, Firefox 88+, Edge 90+, atau Safari 14+.
-</div>
-
-<!-- HEADER -->
-<header class="app-header">
-  <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+      </div>
+      <div class="login-title">Al Usariyah</div>
+      <div class="login-sub">Journal Article Tracker</div>
     </div>
-    <div>
-      <div class="brand-name">Al Usariyah</div>
-      <div class="brand-sub">Journal Article Tracker</div>
+    <div class="login-form">
+      <div class="login-error" id="loginError"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="btn-login" id="btnLogin" onclick="doLogin()">Masuk</button>
     </div>
   </div>
-  <div class="header-stats">
-    <div class="stat-pill">Total: <strong id="statTotal">0</strong></div>
-    <div class="stat-pill">Review: <strong id="statReview">0</strong></div>
-    <div class="stat-pill">Ditolak: <strong id="statRejected">0</strong></div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" style="display:none;">
+
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg></div>
+    <div><div class="brand-name">Al Usariyah</div><div class="brand-sub">Journal Article Tracker</div></div>
+  </div>
+  <div class="header-right">
+    <div class="header-stats">
+      <div class="stat-pill">Total: <strong id="statTotal">0</strong></div>
+      <div class="stat-pill">Review: <strong id="statReview">0</strong></div>
+      <div class="stat-pill">Terbit: <strong id="statPublished">0</strong></div>
+    </div>
+    <div class="user-badge" id="userBadge">—</div>
+    <button class="btn-logout" onclick="doLogout()">Keluar</button>
   </div>
 </header>
 
-<!-- NAV -->
 <nav class="app-nav">
-  <button class="nav-tab active" onclick="showPage('articles',this)">
-    Artikel / Articles
-  </button>
-  <button class="nav-tab" onclick="showPage('funding',this)">
-    Pendanaan / Funding
-  </button>
-  <button class="nav-tab" onclick="showPage('personnel',this)">
-    Personel / Personnel
-  </button>
-  <button class="nav-tab" onclick="showPage('statistik',this)">
-    Statistik / Charts
-  </button>
+  <button class="nav-tab active" onclick="showPage('articles',this)">Artikel</button>
+  <button class="nav-tab" onclick="showPage('funding',this)">Pendanaan</button>
+  <button class="nav-tab" onclick="showPage('personnel',this)">Personel</button>
+  <button class="nav-tab" onclick="showPage('statistik',this)">Statistik</button>
 </nav>
 
-<!-- SYNC BAR -->
-<div class="sync-bar" id="syncBar">
-  <div class="sync-dot" id="syncDot"></div>
-  <span class="sync-label" id="syncLabel">Google Sheets: Belum terhubung</span>
-  <button class="btn-sync" id="btnTestConn" onclick="testConnection()">Test Koneksi</button>
-  <button class="btn-sync" id="btnSyncAll" onclick="syncAllToSheets()" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);" disabled>&#8593; Kirim ke Sheets</button>
-  <button class="btn-sync" id="btnPullSheets" onclick="pullFromSheets()" style="background:var(--purple-50);border-color:var(--purple-600);color:var(--purple-800);" disabled>&#8595; Tarik dari Sheets</button>
-  <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin-left:4px;">
-    <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync()" style="width:auto;" />
-    <span>Auto-sync</span>
-  </label>
-  <span id="syncLastTime" style="margin-left:auto;color:var(--gray-400);font-size:11px;"></span>
+<div class="db-bar">
+  <div class="db-dot loading" id="dbDot"></div>
+  <span id="dbLabel">Menghubungkan ke database...</span>
+  <button class="btn-import-sm" onclick="exportArticlesExcel()" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);">&#8681; Export Excel</button>
+  <button class="btn-import-sm" onclick="document.getElementById('importFileInput').click()" style="background:var(--amber-50);border-color:var(--amber-600);color:var(--amber-800);">&#8659; Import Excel</button>
+  <button class="btn-import-sm" onclick="downloadTemplate()" style="background:var(--gray-50);border-color:var(--gray-400);color:var(--gray-700);">&#8659; Template</button>
+  <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importFromExcel(this)" />
 </div>
 
 <!-- PAGE: ARTICLES -->
 <div class="page active" id="page-articles">
-  <div class="app-body">
-    <!-- LEFT: FORM -->
-    <div>
-      <div class="panel" id="submissionPanel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title" id="formPanelTitle">Tambah Artikel <span style="color:var(--gray-400);font-weight:400;font-family:'Source Sans 3',sans-serif">/ Add Article</span></div>
-            <div class="panel-subtitle" id="formPanelSub">Formulir pengajuan artikel baru</div>
-          </div>
-          <span class="form-mode-indicator" id="formModeIndicator">Edit Mode</span>
-        </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <label>Judul Artikel <span class="label-id">/ Title</span></label>
-            <input type="text" id="fieldTitle" placeholder="Masukkan judul artikel..." />
-            <div class="validation-msg" id="errTitle">Judul wajib diisi</div>
-          </div>
-          <div class="form-group">
-            <label>Penulis & Afiliasi <span class="label-id">/ Authors & Affiliations</span></label>
-            <div id="authorsContainer"></div>
-            <button type="button" class="btn-add-mini" onclick="addAuthorField()" style="margin-top:8px;width:100%;">+ Tambah Penulis</button>
-            <div class="validation-msg" id="errAuthors">Minimal satu penulis wajib diisi</div>
-          </div>
-          <div class="form-group">
-            <label>Email Penulis <span class="label-id">/ Author Email</span></label>
-            <input type="text" id="fieldEmail" placeholder="email@example.com" />
-          </div>
-          <div class="form-group">
-            <label>Link DOI <span class="label-id">/ DOI Link (optional)</span></label>
-            <input type="text" id="fieldDOI" placeholder="https://doi.org/..." />
-          </div>
-          <div class="form-group">
-            <label>Tanggal Pengajuan <span class="label-id">/ Date</span></label>
-            <input type="date" id="fieldDate" />
-            <div class="validation-msg" id="errDate">Tanggal wajib diisi</div>
-          </div>
-          <div class="form-divider"></div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" id="btnSubmit" onclick="submitArticle()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              Simpan Artikel
-            </button>
-            <button class="btn btn-delete btn-sm" id="btnCancelEdit" onclick="cancelEdit()" style="display:none;flex-shrink:0">Batal</button>
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-top:1rem;padding:1rem 1.25rem;background:#fff;border:1px solid var(--gray-200);border-radius:12px;">
-        <div style="font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Panduan</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600);"><span style="width:20px;height:20px;border-radius:50%;background:var(--blue-50);border:1px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue-800);flex-shrink:0">1</span>Masukkan data artikel &amp; klik Simpan</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600);"><span style="width:20px;height:20px;border-radius:50%;background:var(--blue-50);border:1px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue-800);flex-shrink:0">2</span>Klik "Review" → isi editor, reviewer, layout worker</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600);"><span style="width:20px;height:20px;border-radius:50%;background:var(--blue-50);border:1px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue-800);flex-shrink:0">3</span>Pilih dari daftar personel yang tersedia</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600);"><span style="width:20px;height:20px;border-radius:50%;background:var(--blue-50);border:1px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue-800);flex-shrink:0">4</span>Centang checklist Turnitin, EYD, Layout</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT: DASHBOARD -->
+<div class="app-body">
+  <div>
     <div class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Dashboard Artikel</div>
-          <div class="panel-subtitle" id="dashboardSubtitle">Semua artikel</div>
+          <div class="panel-title" id="formPanelTitle">Tambah Artikel</div>
+          <div class="panel-subtitle" id="formPanelSub">Formulir pengajuan artikel baru</div>
         </div>
-        <input type="text" id="searchInput" placeholder="Cari artikel..." onkeyup="filterArticles()" style="width:180px;padding:5px 10px;font-size:13px;" />
+        <span class="form-mode-indicator" id="formModeIndicator">Edit Mode</span>
       </div>
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="setFilter(this,'all')">Semua</button>
-        <button class="filter-btn" onclick="setFilter(this,'submitted')">Diajukan</button>
-        <button class="filter-btn" onclick="setFilter(this,'review')">Review</button>
-        <button class="filter-btn" onclick="setFilter(this,'rejected')">Ditolak</button>
-        <select id="filterAffiliation" onchange="filterArticles()" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid var(--gray-200);margin-left:8px;">
-          <option value="">Semua Afiliasi</option>
-        </select>
-        <select id="filterIssue" onchange="filterArticles()" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid var(--gray-200);">
-          <option value="">Semua Terbitan</option>
-        </select>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="field-label">Judul Artikel</label>
+          <input type="text" id="fieldTitle" placeholder="Masukkan judul artikel..." />
+          <div class="validation-msg" id="errTitle">Judul wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Penulis &amp; Afiliasi</label>
+          <div class="authors-box" id="authorsBox"></div>
+          <button class="add-author-btn" onclick="addAuthorField()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Tambah Penulis
+          </button>
+          <div class="validation-msg" id="errAuthors">Minimal satu penulis wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Tanggal Pengajuan</label>
+          <input type="date" id="fieldDate" />
+          <div class="validation-msg" id="errDate">Tanggal wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">DOI <span class="opt">opsional</span></label>
+          <input type="url" id="fieldDoi" placeholder="https://doi.org/10.xxxx/..." />
+        </div>
+        <div class="form-divider"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" id="btnSubmit" onclick="submitArticle()">Simpan Artikel</button>
+          <button class="btn btn-delete btn-sm" id="btnCancelEdit" onclick="cancelEdit()" style="display:none;flex-shrink:0;">Batal</button>
+        </div>
       </div>
-      <div id="articlesList" class="articles-list"></div>
     </div>
   </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Dashboard Artikel</div>
+        <div class="panel-subtitle" id="dashboardSubtitle">Memuat...</div>
+      </div>
+      <input type="text" id="searchInput" placeholder="Cari judul / penulis..." oninput="applyFilters()" style="width:190px;padding:5px 10px;font-size:13px;" />
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">Semua</button>
+      <button class="filter-btn" onclick="setFilter(this,'submitted')">Diajukan</button>
+      <button class="filter-btn" onclick="setFilter(this,'review')">Review</button>
+      <button class="filter-btn" onclick="setFilter(this,'published')">Terbit</button>
+      <button class="filter-btn" onclick="setFilter(this,'rejected')">Ditolak</button>
+    </div>
+    <div class="adv-filters">
+      <span style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Filter:</span>
+      <select id="filterAffiliation" onchange="applyFilters()" style="width:160px;"><option value="">Semua Afiliasi</option></select>
+      <select id="filterIssue" onchange="applyFilters()" style="width:160px;"><option value="">Semua Terbitan</option></select>
+      <button class="btn btn-delete btn-xs" onclick="resetFilters()">Reset</button>
+    </div>
+    <div class="bulk-actions" id="bulkActionsBar" style="display:none;">
+      <label><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)"> Pilih semua</label>
+      <button class="btn btn-delete btn-xs" onclick="deleteSelectedArticles()">Hapus Terpilih</button>
+      <button class="btn btn-delete btn-xs" onclick="clearSelections()">Reset pilihan</button>
+      <span id="bulkSelectionCount" style="font-size:12px;color:var(--gray-600);"></span>
+    </div>
+    <div id="articlesList" class="articles-list"><div class="loading-row">Memuat artikel...</div></div>
+  </div>
+</div>
 </div>
 
 <!-- PAGE: FUNDING -->
 <div class="page" id="page-funding">
-  <div class="app-body-full">
-    <div class="funding-summary" id="fundingSummary"></div>
-    <div class="funding-table-wrap">
-      <div class="funding-table-header">
-        <div>
-          <div class="panel-title">Daftar Penerima Dana <span style="color:var(--gray-400);font-weight:400;font-family:'Source Sans 3',sans-serif">/ Funding Recipients</span></div>
-          <div class="panel-subtitle">Berdasarkan penugasan artikel yang sudah masuk review</div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <input type="text" id="fundFilterName" placeholder="Cari nama..." onkeyup="renderFunding()" style="width:140px;padding:5px 8px;font-size:12px;" />
-          <select id="fundFilterRole" onchange="renderFunding()" style="width:120px;padding:5px 8px;font-size:12px;">
-            <option value="all">Semua Peran</option>
-            <option value="editor">Editor</option>
-            <option value="reviewer">Reviewer</option>
-            <option value="layout">Layout</option>
-          </select>
-          <select id="fundFilterIssue" onchange="renderFunding()" style="width:140px;padding:5px 8px;font-size:12px;">
-            <option value="">Semua Terbitan</option>
-          </select>
-          <button class="btn btn-sm" onclick="exportFunding('excel')" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-            Excel
-          </button>
-          <button class="btn btn-sm" onclick="exportFunding('pdf')" style="background:var(--red-50);border-color:var(--red-600);color:var(--red-600);">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-            PDF
-          </button>
-        </div>
-      </div>
-      <div id="fundingTableBody"></div>
-    </div>
+<div class="app-body-full">
+  <div class="funding-summary" id="fundingSummary"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem;">
+    <span style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Filter:</span>
+    <select id="fundFilterRole" onchange="renderFunding()" style="width:130px;padding:5px 8px;font-size:13px;"><option value="">Semua Peran</option><option value="editor">Editor</option><option value="reviewer">Reviewer</option><option value="layout">Layout</option></select>
+    <select id="fundFilterIssue" onchange="renderFunding()" style="width:160px;padding:5px 8px;font-size:13px;"><option value="">Semua Terbitan</option></select>
+    <input type="text" id="fundFilterName" placeholder="Cari nama..." oninput="renderFunding()" style="width:150px;padding:5px 8px;font-size:13px;" />
+    <button class="btn btn-delete btn-sm" onclick="exportFundingCSV()">Export CSV</button>
+    <button class="btn btn-delete btn-sm" onclick="exportFundingPDF()">Export PDF</button>
   </div>
+  <div id="fundingContent"></div>
+</div>
 </div>
 
 <!-- PAGE: PERSONNEL -->
 <div class="page" id="page-personnel">
-  <div class="app-body-full">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
-
-      <!-- EDITORS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Editor</div>
-            <div class="panel-subtitle" id="countEditors">0 orang terdaftar</div>
-          </div>
-          <span style="width:28px;height:28px;border-radius:6px;background:var(--blue-50);display:flex;align-items:center;justify-content:center;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--blue-600)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-          </span>
-        </div>
-        <div class="panel-body">
-          <div class="personnel-list" id="listEditors"></div>
-          <div class="add-personnel-row" style="margin-top:10px;">
-            <input type="text" id="inputEditor" placeholder="Nama editor baru..." />
-            <button class="btn-add-mini" onclick="addPersonnel('editor')">+ Tambah</button>
-          </div>
-        </div>
+<div class="app-body-full">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Editor</div><div class="panel-subtitle" id="countEditors">0 terdaftar</div></div></div>
+      <div class="panel-body">
+        <div class="personnel-list" id="listEditors"></div>
+        <div class="add-personnel-row"><input type="text" id="inputEditor" placeholder="Nama editor baru..." /><button class="btn-add-mini" onclick="addPersonnel('editor')">+ Tambah</button></div>
       </div>
-
-      <!-- REVIEWERS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Reviewer</div>
-            <div class="panel-subtitle" id="countReviewers">0 orang terdaftar</div>
-          </div>
-          <span style="width:28px;height:28px;border-radius:6px;background:var(--teal-50);display:flex;align-items:center;justify-content:center;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--teal-600)"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-          </span>
-        </div>
-        <div class="panel-body">
-          <div class="personnel-list" id="listReviewers"></div>
-          <div class="add-personnel-row" style="margin-top:10px;">
-            <input type="text" id="inputReviewer" placeholder="Nama reviewer baru..." />
-            <button class="btn-add-mini" onclick="addPersonnel('reviewer')">+ Tambah</button>
-          </div>
-        </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Reviewer</div><div class="panel-subtitle" id="countReviewers">0 terdaftar</div></div></div>
+      <div class="panel-body">
+        <div class="personnel-list" id="listReviewers"></div>
+        <div class="add-personnel-row"><input type="text" id="inputReviewer" placeholder="Nama reviewer baru..." /><button class="btn-add-mini" onclick="addPersonnel('reviewer')">+ Tambah</button></div>
       </div>
-
-      <!-- LAYOUT WORKERS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Layout Worker</div>
-            <div class="panel-subtitle" id="countLayouts">0 orang terdaftar</div>
-          </div>
-          <span style="width:28px;height:28px;border-radius:6px;background:var(--purple-50);display:flex;align-items:center;justify-content:center;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--purple-600)"><path d="M3 5v4h2V5h4V3H5c-1.1 0-2 .9-2 2zm2 10H3v4c0 1.1.9 2 2 2h4v-2H5v-4zm14 4h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zm0-16h-4v2h4v4h2V5c0-1.1-.9-2-2-2z"/></svg>
-          </span>
-        </div>
-        <div class="panel-body">
-          <div class="personnel-list" id="listLayouts"></div>
-          <div class="add-personnel-row" style="margin-top:10px;">
-            <input type="text" id="inputLayout" placeholder="Nama layout worker baru..." />
-            <button class="btn-add-mini" onclick="addPersonnel('layout')">+ Tambah</button>
-          </div>
-        </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Layout Worker</div><div class="panel-subtitle" id="countLayouts">0 terdaftar</div></div></div>
+      <div class="panel-body">
+        <div class="personnel-list" id="listLayouts"></div>
+        <div class="add-personnel-row"><input type="text" id="inputLayout" placeholder="Nama layout worker baru..." /><button class="btn-add-mini" onclick="addPersonnel('layout')">+ Tambah</button></div>
       </div>
-
     </div>
   </div>
+</div>
 </div>
 
 <!-- PAGE: STATISTIK -->
 <div class="page" id="page-statistik">
 <div class="app-body-full">
-
-  <!-- SUMMARY CARDS -->
   <div id="statCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;"></div>
-
-  <!-- CHARTS GRID -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
-
-    <!-- Chart 1: Artikel per Bulan -->
     <div class="panel">
       <div class="panel-header">
-        <div>
-          <div class="panel-title">Artikel per Bulan</div>
-          <div class="panel-subtitle">Jumlah submission tiap bulan</div>
-        </div>
+        <div><div class="panel-title">Artikel per Bulan</div><div class="panel-subtitle">Jumlah submission tiap bulan</div></div>
         <select id="chartYearFilter" onchange="renderCharts()" style="width:90px;padding:4px 8px;font-size:12px;"></select>
       </div>
-      <div class="panel-body" style="padding:1rem;">
-        <canvas id="chartByMonth" height="220"></canvas>
-      </div>
+      <div class="panel-body"><canvas id="chartByMonth" height="220"></canvas></div>
     </div>
-
-    <!-- Chart 2: Status Artikel -->
     <div class="panel">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Status Artikel</div>
-          <div class="panel-subtitle">Distribusi status saat ini</div>
-        </div>
-      </div>
-      <div class="panel-body" style="padding:1rem;display:flex;align-items:center;justify-content:center;">
-        <canvas id="chartByStatus" height="220"></canvas>
-      </div>
+      <div class="panel-header"><div><div class="panel-title">Status Artikel</div><div class="panel-subtitle">Distribusi status saat ini</div></div></div>
+      <div class="panel-body" style="display:flex;align-items:center;justify-content:center;"><canvas id="chartByStatus" height="220"></canvas></div>
     </div>
-
   </div>
-
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-
-    <!-- Chart 3: Afiliasi -->
     <div class="panel">
       <div class="panel-header">
-        <div>
-          <div class="panel-title">Distribusi Afiliasi</div>
-          <div class="panel-subtitle">Dari institusi mana saja</div>
-        </div>
-        <select id="chartAfilTop" onchange="renderCharts()" style="width:110px;padding:4px 8px;font-size:12px;">
-          <option value="10">Top 10</option>
-          <option value="5">Top 5</option>
-          <option value="999">Semua</option>
-        </select>
+        <div><div class="panel-title">Distribusi Afiliasi</div></div>
+        <select id="chartAfilTop" onchange="renderCharts()" style="width:110px;padding:4px 8px;font-size:12px;"><option value="10">Top 10</option><option value="5">Top 5</option><option value="999">Semua</option></select>
       </div>
-      <div class="panel-body" style="padding:1rem;">
-        <canvas id="chartByAfil" height="250"></canvas>
-      </div>
+      <div class="panel-body"><canvas id="chartByAfil" height="250"></canvas></div>
     </div>
-
-    <!-- Chart 4: Beban Reviewer -->
     <div class="panel">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Beban Reviewer</div>
-          <div class="panel-subtitle">Jumlah artikel per reviewer</div>
-        </div>
-      </div>
-      <div class="panel-body" style="padding:1rem;">
-        <canvas id="chartByReviewer" height="250"></canvas>
-      </div>
+      <div class="panel-header"><div><div class="panel-title">Beban Reviewer</div></div></div>
+      <div class="panel-body"><canvas id="chartByReviewer" height="250"></canvas></div>
     </div>
-
   </div>
-
 </div>
 </div>
 
+</div><!-- end appShell -->
 
 <!-- REVIEW MODAL -->
 <div class="modal-overlay" id="reviewModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Formulir Review <span style="color:var(--gray-400);font-weight:400;font-family:'Source Sans 3',sans-serif">/ Review Form</span></div>
+      <div class="modal-title">Formulir Review</div>
       <button class="modal-close" onclick="closeReviewModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div style="font-size:13px;color:var(--blue-800);background:var(--blue-50);border:1px solid var(--blue-100);border-radius:6px;padding:8px 12px;margin-bottom:1rem;" id="reviewModalArticleTitle"></div>
-
-      <div class="form-group">
-        <label>Editor <span class="label-id">/ Pilih editor (WAJIB)</span> <span style="color:var(--red-600)">*</span></label>
-        <select id="reviewEditor">
-          <option value="">-- Pilih Editor --</option>
-        </select>
-        <div class="validation-msg" id="errEditor">Editor wajib dipilih</div>
-      </div>
-      <div class="form-group">
-        <label>Reviewer <span class="label-id">/ Pilih reviewer (WAJIB)</span> <span style="color:var(--red-600)">*</span></label>
-        <select id="reviewReviewer">
-          <option value="">-- Pilih Reviewer --</option>
-        </select>
-        <div class="validation-msg" id="errReviewer">Reviewer wajib dipilih</div>
-      </div>
-      <div class="form-group">
-        <label>Layout Worker <span class="label-id">/ Pengerjaan layout (opsional)</span></label>
-        <select id="reviewLayout">
-          <option value="">-- Pilih Layout Worker --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Nomor Terbitan <span class="label-id">/ Publication Issue (opsional)</span></label>
-        <input type="text" id="reviewIssue" placeholder="Vol. 5 No. 2 (2025)..." />
-      </div>
-      <div class="form-group">
-        <label>Email Penulis <span class="label-id">/ Author Email (opsional)</span></label>
-        <input type="text" id="reviewEmail" placeholder="email@example.com" />
-      </div>
-      <div class="form-group">
-        <label>Link DOI <span class="label-id">/ DOI Link (opsional)</span></label>
-        <input type="text" id="reviewDOI" placeholder="https://doi.org/..." />
-      </div>
+      <div id="reviewModalArticleTitle" style="font-size:13px;color:var(--blue-800);background:var(--blue-50);border:1px solid var(--blue-100);border-radius:6px;padding:8px 12px;margin-bottom:1rem;line-height:1.4;"></div>
+      <div class="modal-section-label">Wajib <span class="required-star">*</span></div>
+      <div class="form-group"><label class="field-label">Editor <span class="required-star">*</span></label><select id="reviewEditor"><option value="">-- Pilih Editor --</option></select><div class="validation-msg" id="errEditor">Editor wajib dipilih</div></div>
+      <div class="form-group"><label class="field-label">Reviewer <span class="required-star">*</span></label><select id="reviewReviewer"><option value="">-- Pilih Reviewer --</option></select><div class="validation-msg" id="errReviewer">Reviewer wajib dipilih</div></div>
+      <div class="modal-section-label" style="margin-top:1.25rem;">Opsional</div>
+      <div class="form-group"><label class="field-label">Layout Worker</label><select id="reviewLayout"><option value="">-- Pilih Layout Worker --</option></select></div>
+      <div class="form-group"><label class="field-label">Nomor Terbitan</label><input type="text" id="reviewIssue" placeholder="Vol. 5 No. 2 (2025)..." /></div>
+      <div class="form-group"><label class="field-label">DOI</label><input type="url" id="reviewDoi" placeholder="https://doi.org/..." /></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-delete btn-sm" onclick="closeReviewModal()">Batal</button>
@@ -687,297 +478,275 @@
   </div>
 </div>
 
+<!-- IMPORT MODAL -->
+<div class="import-modal" id="importModal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <div class="modal-title">Import dari Excel</div>
+      <button class="modal-close" onclick="closeImportModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-warning" id="importWarning" style="display:none;"></div>
+      <div id="importRowCount" style="font-size:12px;color:var(--gray-600);margin-bottom:6px;"></div>
+      <div class="import-preview" id="importPreview"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-delete btn-sm" onclick="closeImportModal()">Batal</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmImport()" style="width:auto;">Import Semua</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-const SK_ARTICLES = 'al_usariyah_articles';
-const SK_PERSONNEL = 'al_usariyah_personnel';
+// ============================================================
+//  SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://bldfgsqhovwzztmhcsyu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZGZnc3Fob3Z3enp0bWhjc3l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NTc0NzIsImV4cCI6MjA5MzMzMzQ3Mn0.4a9ACJaw_z1Jz7KJadsF2CYhGrlP-gpYvYBp4wL98RI';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let articles = [];
-let personnel = { editor: [], reviewer: [], layout: [] };
+// ============================================================
+//  STATE
+// ============================================================
+let articles   = [];
+let personnel  = { editor:[], reviewer:[], layout:[] };
 let currentFilter = 'all';
-let searchQuery = '';
-let filterAffiliation = '';
-let filterIssue = '';
-let editingId = null;
+let editingId  = null;
 let reviewingId = null;
-let authorFieldCount = 0;
+let authorCount = 0;
+let importBuffer = [];
+let selectedArticleIds = new Set();
+let currentUser = null;
+let chartInstances = {};
 
-// --- STORAGE ---
-function checkStorage() {
-  try { localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return true; }
-  catch(e) { document.getElementById('compatWarning').classList.add('show'); return false; }
-}
-function saveArticles() { localStorage.setItem(SK_ARTICLES, JSON.stringify(articles)); }
-function savePersonnel() { localStorage.setItem(SK_PERSONNEL, JSON.stringify(personnel)); }
-function loadAll() {
-  const ra = localStorage.getItem(SK_ARTICLES);
-  if (ra) { try { articles = JSON.parse(ra); } catch(e) { articles = []; } }
-  const rp = localStorage.getItem(SK_PERSONNEL);
-  if (rp) { try { personnel = JSON.parse(rp); } catch(e) {} }
-}
-
-// --- INIT ---
-checkStorage();
-loadAll();
-// Fix any old-format dates in localStorage
-articles = articles.map(a => {
-  if (a.date && a.date.length > 10) {
-    const d = new Date(a.date);
-    if (!isNaN(d.getTime())) {
-      const yyyy = d.getFullYear();
-      const mm   = String(d.getMonth()+1).padStart(2,'0');
-      const dd   = String(d.getDate()).padStart(2,'0');
-      a.date = yyyy+'-'+mm+'-'+dd;
-    }
-  }
-  return a;
-});
-saveArticles();
-document.getElementById('fieldDate').valueAsDate = new Date();
-addAuthorField(); // Add first author field
-renderAll();
-renderPersonnel();
-populateFilterDropdowns();
-
-// --- PAGE NAV ---
-function showPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  btn.classList.add('active');
-  if (name === 'funding') renderFunding();
-  if (name === 'personnel') renderPersonnel();
-  if (name === 'statistik') renderCharts();
-}
-
-// --- PERSONNEL ---
-function addPersonnel(role) {
-  const input = document.getElementById('input' + cap(role));
-  const name = input.value.trim();
-  if (!name) return;
-  if (personnel[role].includes(name)) { showToast('Nama sudah ada', 'error'); return; }
-  personnel[role].push(name);
-  savePersonnel();
-  input.value = '';
-  renderPersonnel();
-  showToast(name + ' ditambahkan sebagai ' + role, 'success');
-}
-function removePersonnel(role, name) {
-  personnel[role] = personnel[role].filter(n => n !== name);
-  savePersonnel();
-  renderPersonnel();
-}
-function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-function renderPersonnel() {
-  const roles = { editor: 'Editors', reviewer: 'Reviewers', layout: 'Layouts' };
-  ['editor','reviewer','layout'].forEach(role => {
-    const list = document.getElementById('list' + cap(role) + 's');
-    const count = document.getElementById('count' + cap(role) + 's');
-    count.textContent = personnel[role].length + ' orang terdaftar';
-    if (!personnel[role].length) {
-      list.innerHTML = '<div style="font-size:12px;color:var(--gray-400);padding:6px 0;">Belum ada personel</div>';
-      return;
-    }
-    list.innerHTML = personnel[role].map(name => `
-      <div class="personnel-item">
-        <div>
-          <div class="personnel-name">${escapeHtml(name)}</div>
-          <div class="personnel-role">${cap(role)}</div>
-        </div>
-        <button class="btn btn-delete btn-sm" style="padding:3px 8px;font-size:11px;" onclick="removePersonnel('${role}','${escapeHtml(name)}')">Hapus</button>
-      </div>
-    `).join('');
-  });
-}
-
-function populateReviewDropdowns() {
-  ['editor','reviewer','layout'].forEach(role => {
-    const sel = document.getElementById('review' + cap(role));
-    const cur = sel.value;
-    sel.innerHTML = `<option value="">-- Pilih ${cap(role)} --</option>`;
-    personnel[role].forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name; opt.textContent = name;
-      if (name === cur) opt.selected = true;
-      sel.appendChild(opt);
-    });
-  });
-}
-
-// --- AUTHORS MANAGEMENT ---
-function addAuthorField() {
-  const container = document.getElementById('authorsContainer');
-  const id = ++authorFieldCount;
-  const div = document.createElement('div');
-  div.className = 'author-row';
-  div.id = `author-row-${id}`;
-  div.innerHTML = `
-    <input type="text" placeholder="Nama penulis..." data-author-name="${id}" />
-    <input type="text" placeholder="Afiliasi..." data-author-affiliation="${id}" />
-    <button type="button" class="btn-remove-author" onclick="removeAuthorField(${id})">✕</button>
-  `;
-  container.appendChild(div);
-}
-
-function removeAuthorField(id) {
-  const row = document.getElementById(`author-row-${id}`);
-  if (row) row.remove();
-}
-
-function getAuthors() {
-  const authors = [];
-  document.querySelectorAll('[data-author-name]').forEach(input => {
-    const id = input.getAttribute('data-author-name');
-    const name = input.value.trim();
-    const affiliation = document.querySelector(`[data-author-affiliation="${id}"]`).value.trim();
-    if (name && affiliation) {
-      authors.push({ name, affiliation });
-    }
-  });
-  return authors;
-}
-
-function setAuthors(authors) {
-  document.getElementById('authorsContainer').innerHTML = '';
-  authorFieldCount = 0;
-  if (!authors || authors.length === 0) {
-    addAuthorField();
+// ============================================================
+//  AUTH
+// ============================================================
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn   = document.getElementById('btnLogin');
+  errEl.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Masuk...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    errEl.textContent = 'Login gagal: ' + error.message;
+    errEl.classList.add('show');
+    btn.disabled = false; btn.textContent = 'Masuk';
     return;
   }
-  authors.forEach(a => {
-    addAuthorField();
-    const id = authorFieldCount;
-    document.querySelector(`[data-author-name="${id}"]`).value = a.name;
-    document.querySelector(`[data-author-affiliation="${id}"]`).value = a.affiliation;
-  });
+  currentUser = data.user;
+  showApp();
 }
 
-// --- ARTICLE SUBMIT ---
-function submitArticle() {
-  const title = document.getElementById('fieldTitle').value.trim();
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginPassword').value = '';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appShell').style.display = 'block';
+  document.getElementById('userBadge').textContent = currentUser.email;
+  document.getElementById('fieldDate').valueAsDate = new Date();
+  addAuthorField();
+  loadAll();
+}
+
+// Check existing session on load
+window.addEventListener('DOMContentLoaded', async function() {
+  const { data } = await sb.auth.getSession();
+  if (data.session) {
+    currentUser = data.session.user;
+    showApp();
+  }
+
+  // Enter key on login
+  document.getElementById('loginPassword').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('reviewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReviewModal();
+  });
+  document.getElementById('importModal').addEventListener('click', function(e) {
+    if (e.target === this) closeImportModal();
+  });
+});
+
+// ============================================================
+//  DATABASE — LOAD ALL
+// ============================================================
+async function loadAll() {
+  setDbState('loading', 'Memuat data...');
+  try {
+    const [artRes, perRes] = await Promise.all([
+      sb.from('articles').select('*').order('created_at', { ascending:false }),
+      sb.from('personnel').select('*').order('name')
+    ]);
+    if (artRes.error) throw artRes.error;
+    if (perRes.error) throw perRes.error;
+
+    // Map DB columns to app format
+    articles = artRes.data.map(dbToArticle);
+    personnel = { editor:[], reviewer:[], layout:[] };
+    perRes.data.forEach(function(p) {
+      if (personnel[p.role]) personnel[p.role].push(p.name);
+    });
+
+    setDbState('ok', 'Terhubung ke Supabase ✓ — ' + articles.length + ' artikel');
+    renderAll();
+    renderPersonnel();
+  } catch(e) {
+    setDbState('err', 'Gagal: ' + e.message);
+    showToast('Gagal memuat data: ' + e.message, 'error');
+  }
+}
+
+function dbToArticle(row) {
+  return {
+    id:           row.id,
+    title:        row.title,
+    authors:      row.authors || [],
+    date:         row.date || '',
+    editor:       row.editor || '',
+    reviewer:     row.reviewer || '',
+    layoutWorker: row.layout_worker || '',
+    issue:        row.issue || '',
+    doi:          row.doi || '',
+    status:       row.status || 'submitted',
+    checklist:    row.checklist || { turnitin:false, eyd:false, layout:false },
+    createdAt:    row.created_at
+  };
+}
+
+function articleToDb(a) {
+  return {
+    id:            a.id,
+    title:         a.title,
+    authors:       a.authors,
+    date:          a.date,
+    editor:        a.editor || '',
+    reviewer:      a.reviewer || '',
+    layout_worker: a.layoutWorker || '',
+    issue:         a.issue || '',
+    doi:           a.doi || '',
+    status:        a.status,
+    checklist:     a.checklist
+  };
+}
+
+// ============================================================
+//  ARTICLE CRUD
+// ============================================================
+async function submitArticle() {
+  const title  = document.getElementById('fieldTitle').value.trim();
+  const date   = document.getElementById('fieldDate').value;
+  const doi    = document.getElementById('fieldDoi').value.trim();
   const authors = getAuthors();
-  const date = document.getElementById('fieldDate').value;
-  const email = document.getElementById('fieldEmail').value.trim();
-  const doi = document.getElementById('fieldDOI').value.trim();
-  
   let valid = true;
-  const errTitle = document.getElementById('errTitle');
-  const errAuthors = document.getElementById('errAuthors');
-  const errDate = document.getElementById('errDate');
-  
-  if (!title) { errTitle.classList.add('show'); valid = false; } else errTitle.classList.remove('show');
-  if (authors.length === 0) { errAuthors.classList.add('show'); valid = false; } else errAuthors.classList.remove('show');
-  if (!date) { errDate.classList.add('show'); valid = false; } else errDate.classList.remove('show');
-  
+  const setErr = function(id, show) { document.getElementById(id).classList[show?'add':'remove']('show'); if(show) valid=false; };
+  setErr('errTitle', !title);
+  setErr('errDate', !date);
+  setErr('errAuthors', !authors.length || !authors.some(function(a){return a.name;}));
   if (!valid) return;
 
+  document.getElementById('btnSubmit').disabled = true;
+
+  const articleData = {
+    id:           editingId || (Date.now().toString() + '_' + Math.random().toString(36).slice(2)),
+    title, authors, date, doi,
+    editor: '', reviewer: '', layoutWorker:'', issue: '',
+    status: 'submitted',
+    checklist: { turnitin:false, eyd:false, layout:false }
+  };
+
   if (editingId) {
-    const idx = articles.findIndex(a => a.id === editingId);
-    if (idx !== -1) { 
-      articles[idx] = {...articles[idx], title, authors, date, email, doi}; 
-      saveArticles(); 
-      showToast('Artikel diperbarui','success'); 
-      cancelEdit(); 
+    // Keep existing review data
+    const existing = articles.find(function(a){return a.id===editingId;});
+    if (existing) {
+      articleData.editor = existing.editor;
+      articleData.reviewer = existing.reviewer;
+      articleData.layoutWorker = existing.layoutWorker;
+      articleData.issue = existing.issue;
+      articleData.status = existing.status;
+      articleData.checklist = existing.checklist;
+      articleData.doi = doi || existing.doi;
     }
+  }
+
+  const { error } = await sb.from('articles').upsert(articleToDb(articleData));
+  document.getElementById('btnSubmit').disabled = false;
+  if (error) { showToast('Gagal simpan: ' + error.message, 'error'); return; }
+
+  if (editingId) {
+    const idx = articles.findIndex(function(a){return a.id===editingId;});
+    if (idx !== -1) articles[idx] = articleData;
+    showToast('Artikel diperbarui', 'success');
+    cancelEdit();
   } else {
-    articles.unshift({
-      id:Date.now().toString(), 
-      title, 
-      authors, 
-      date, 
-      email, 
-      doi,
-      status:'submitted', 
-      editor:'', 
-      reviewer:'', 
-      layoutWorker:'', 
-      issue:'', 
-      checklist:{turnitin:false,eyd:false,layout:false}, 
-      createdAt:new Date().toISOString()
-    });
-    saveArticles(); 
-    showToast('Artikel ditambahkan','success'); 
+    articles.unshift(articleData);
+    showToast('Artikel ditambahkan', 'success');
     clearForm();
   }
   renderAll();
-  populateFilterDropdowns();
 }
 
-function clearForm() {
-  document.getElementById('fieldTitle').value = '';
-  document.getElementById('fieldEmail').value = '';
-  document.getElementById('fieldDOI').value = '';
-  document.getElementById('fieldDate').valueAsDate = new Date();
-  setAuthors([]);
-  ['errTitle','errAuthors','errDate'].forEach(id => document.getElementById(id).classList.remove('show'));
-}
-
-function cancelEdit() {
-  editingId = null; clearForm();
-  document.getElementById('formPanelTitle').innerHTML = 'Tambah Artikel <span style="color:var(--gray-400);font-weight:400;font-family:\'Source Sans 3\',sans-serif">/ Add Article</span>';
-  document.getElementById('formPanelSub').textContent = 'Formulir pengajuan artikel baru';
-  document.getElementById('formModeIndicator').classList.remove('show');
-  document.getElementById('btnCancelEdit').style.display = 'none';
-  document.getElementById('btnSubmit').innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Simpan Artikel';
-}
-
-function startEdit(id) {
-  const a = articles.find(x => x.id === id);
-  if (!a) return;
-  editingId = id;
-  document.getElementById('fieldTitle').value = a.title;
-  document.getElementById('fieldEmail').value = a.email || '';
-  document.getElementById('fieldDOI').value = a.doi || '';
-  document.getElementById('fieldDate').value = a.date;
-  setAuthors(a.authors || [{name: a.author || '', affiliation: a.affiliation || ''}]);
-  document.getElementById('formPanelTitle').innerHTML = 'Edit Artikel <span style="color:var(--gray-400);font-weight:400;font-family:\'Source Sans 3\',sans-serif">/ Edit Article</span>';
-  document.getElementById('formPanelSub').textContent = 'Memperbarui data artikel';
-  document.getElementById('formModeIndicator').classList.add('show');
-  document.getElementById('btnCancelEdit').style.display = 'inline-flex';
-  document.getElementById('btnSubmit').innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> Perbarui Artikel';
-  document.getElementById('fieldTitle').focus();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function deleteArticle(id) {
+async function deleteArticle(id) {
   if (!confirm('Hapus artikel ini?')) return;
-  articles = articles.filter(a => a.id !== id);
-  saveArticles(); renderAll(); showToast('Artikel dihapus');
-}
-
-function rejectArticle(id) {
-  const idx = articles.findIndex(a => a.id === id);
-  if (idx === -1) return;
-  articles[idx].status = 'rejected'; saveArticles(); renderAll();
-  showToast('Artikel ditolak','error');
-}
-
-function publishArticle(id) {
-  if (!confirm('Tandai artikel ini sebagai siap publish?')) return;
-  const idx = articles.findIndex(a => a.id === id);
-  if (idx === -1) return;
-  articles[idx].status = 'published';
-  saveArticles();
+  const { error } = await sb.from('articles').delete().eq('id', id);
+  if (error) { showToast('Gagal hapus: ' + error.message, 'error'); return; }
+  articles = articles.filter(function(a){return a.id!==id;});
   renderAll();
-  showToast('Artikel siap publish!', 'success');
+  showToast('Artikel dihapus');
 }
 
-// --- REVIEW MODAL ---
+async function rejectArticle(id) {
+  const { error } = await sb.from('articles').update({ status:'rejected' }).eq('id', id);
+  if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
+  const idx = articles.findIndex(function(a){return a.id===id;});
+  if (idx !== -1) articles[idx].status = 'rejected';
+  renderAll();
+  showToast('Artikel ditolak', 'error');
+}
+
+async function publishArticle(id) {
+  const { error } = await sb.from('articles').update({ status:'published' }).eq('id', id);
+  if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
+  const idx = articles.findIndex(function(a){return a.id===id;});
+  if (idx !== -1) articles[idx].status = 'published';
+  renderAll();
+  showToast('Artikel siap terbit!', 'success');
+}
+
+async function toggleCheck(id, key) {
+  const idx = articles.findIndex(function(a){return a.id===id;});
+  if (idx === -1) return;
+  articles[idx].checklist[key] = !articles[idx].checklist[key];
+  await sb.from('articles').update({ checklist: articles[idx].checklist }).eq('id', id);
+  renderAll();
+}
+
+// ============================================================
+//  REVIEW MODAL
+// ============================================================
 function openReviewModal(id) {
   reviewingId = id;
-  const a = articles.find(x => x.id === id);
+  const a = articles.find(function(x){return x.id===id;});
   if (!a) return;
   document.getElementById('reviewModalArticleTitle').textContent = a.title;
   populateReviewDropdowns();
-  document.getElementById('reviewEditor').value = a.editor || '';
+  document.getElementById('reviewEditor').value   = a.editor || '';
   document.getElementById('reviewReviewer').value = a.reviewer || '';
-  document.getElementById('reviewLayout').value = a.layoutWorker || '';
-  document.getElementById('reviewIssue').value = a.issue || '';
-  document.getElementById('reviewEmail').value = a.email || '';
-  document.getElementById('reviewDOI').value = a.doi || '';
-  ['errEditor','errReviewer'].forEach(id => document.getElementById(id).classList.remove('show'));
+  document.getElementById('reviewLayout').value   = a.layoutWorker || '';
+  document.getElementById('reviewIssue').value    = a.issue || '';
+  document.getElementById('reviewDoi').value      = a.doi || '';
+  ['errEditor','errReviewer'].forEach(function(id){document.getElementById(id).classList.remove('show');});
   document.getElementById('reviewModal').classList.add('open');
 }
 
@@ -986,921 +755,667 @@ function closeReviewModal() {
   reviewingId = null;
 }
 
-function submitReview() {
-  const editor = document.getElementById('reviewEditor').value;
+async function submitReview() {
+  const editor   = document.getElementById('reviewEditor').value;
   const reviewer = document.getElementById('reviewReviewer').value;
-  const layoutWorker = document.getElementById('reviewLayout').value;
-  const issue = document.getElementById('reviewIssue').value.trim();
-  const email = document.getElementById('reviewEmail').value.trim();
-  const doi = document.getElementById('reviewDOI').value.trim();
-  
   let valid = true;
-  // Only editor and reviewer are required
-  [['errEditor',editor],['errReviewer',reviewer]].forEach(([id,v]) => {
-    const el = document.getElementById(id);
-    if (!v) { el.classList.add('show'); valid = false; } else el.classList.remove('show');
-  });
+  if (!editor)   { document.getElementById('errEditor').classList.add('show');   valid=false; }
+  else document.getElementById('errEditor').classList.remove('show');
+  if (!reviewer) { document.getElementById('errReviewer').classList.add('show'); valid=false; }
+  else document.getElementById('errReviewer').classList.remove('show');
   if (!valid) return;
-  
-  const idx = articles.findIndex(a => a.id === reviewingId);
-  if (idx === -1) return;
-  articles[idx] = {...articles[idx], status:'review', editor, reviewer, layoutWorker, issue, email, doi};
-  saveArticles(); closeReviewModal(); renderAll();
-  populateFilterDropdowns();
-  showToast('Artikel masuk tahap review','success');
+
+  const updates = {
+    status:        'review',
+    editor:        editor,
+    reviewer:      reviewer,
+    layout_worker: document.getElementById('reviewLayout').value,
+    issue:         document.getElementById('reviewIssue').value.trim(),
+    doi:           document.getElementById('reviewDoi').value.trim()
+  };
+
+  const { error } = await sb.from('articles').update(updates).eq('id', reviewingId);
+  if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
+
+  const idx = articles.findIndex(function(a){return a.id===reviewingId;});
+  if (idx !== -1) {
+    articles[idx].status       = 'review';
+    articles[idx].editor       = editor;
+    articles[idx].reviewer     = reviewer;
+    articles[idx].layoutWorker = updates.layout_worker;
+    articles[idx].issue        = updates.issue;
+    articles[idx].doi          = updates.doi;
+  }
+  closeReviewModal();
+  renderAll();
+  showToast('Artikel masuk tahap review', 'success');
 }
 
-// --- CHECKLIST ---
-function toggleCheck(id, key) {
-  const idx = articles.findIndex(a => a.id === id);
-  if (idx === -1) return;
-  articles[idx].checklist[key] = !articles[idx].checklist[key];
-  saveArticles(); renderAll();
+// ============================================================
+//  PERSONNEL CRUD
+// ============================================================
+async function addPersonnel(role) {
+  const input = document.getElementById('input' + cap(role));
+  const name  = input.value.trim();
+  if (!name) return;
+  if (personnel[role].includes(name)) { showToast('Nama sudah ada','error'); return; }
+  const { error } = await sb.from('personnel').insert({ role, name });
+  if (error) { showToast('Gagal tambah: ' + error.message, 'error'); return; }
+  personnel[role].push(name);
+  input.value = '';
+  renderPersonnel();
+  showToast(name + ' ditambahkan', 'success');
 }
 
-// --- FILTER ---
-function setFilter(btn, filter) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderArticles();
+async function removePersonnel(role, name) {
+  const { error } = await sb.from('personnel').delete().eq('role', role).eq('name', name);
+  if (error) { showToast('Gagal hapus: ' + error.message, 'error'); return; }
+  personnel[role] = personnel[role].filter(function(n){return n!==name;});
+  renderPersonnel();
 }
 
-function filterArticles() {
-  searchQuery = document.getElementById('searchInput').value.toLowerCase();
-  filterAffiliation = document.getElementById('filterAffiliation').value;
-  filterIssue = document.getElementById('filterIssue').value;
-  renderArticles();
+function renderPersonnel() {
+  ['editor','reviewer','layout'].forEach(function(role) {
+    const listEl  = document.getElementById('list' + cap(role) + 's');
+    const countEl = document.getElementById('count' + cap(role) + 's');
+    countEl.textContent = personnel[role].length + ' terdaftar';
+    listEl.innerHTML = personnel[role].length
+      ? personnel[role].map(function(name){return '<div class="personnel-item"><div><input type="text" class="personnel-name-input" value="'+escH(name)+'" readonly data-original-name="'+escH(name)+'" /><div class="personnel-role">'+cap(role)+'</div></div><div class="personnel-actions"><button class="btn btn-edit btn-xs" onclick="togglePersonnelEdit(this)">Edit</button><button class="btn btn-delete btn-xs" onclick="removePersonnel(\''+role+'\',this.previousElementSibling.querySelector(\'.personnel-name-input\').value)">Hapus</button></div></div>';}).join('')
+      : '<div style="font-size:12px;color:var(--gray-400);padding:6px 0;">Belum ada personel</div>';
+  });
 }
 
-function populateFilterDropdowns() {
-  // Populate affiliation filter
-  const affiliations = new Set();
-  articles.forEach(a => {
-    if (a.authors) {
-      a.authors.forEach(author => {
-        if (author.affiliation) affiliations.add(author.affiliation);
-      });
-    } else if (a.affiliation) {
-      affiliations.add(a.affiliation);
-    }
-  });
-  const affSelect = document.getElementById('filterAffiliation');
-  const currentAff = affSelect.value;
-  affSelect.innerHTML = '<option value="">Semua Afiliasi</option>';
-  Array.from(affiliations).sort().forEach(aff => {
-    const opt = document.createElement('option');
-    opt.value = aff;
-    opt.textContent = aff;
-    if (aff === currentAff) opt.selected = true;
-    affSelect.appendChild(opt);
-  });
-
-  // Populate issue filter
-  const issues = new Set();
-  articles.forEach(a => {
-    if (a.issue) issues.add(a.issue);
-  });
-  const issueSelect = document.getElementById('filterIssue');
-  const currentIssue = issueSelect.value;
-  issueSelect.innerHTML = '<option value="">Semua Terbitan</option>';
-  Array.from(issues).sort().forEach(issue => {
-    const opt = document.createElement('option');
-    opt.value = issue;
-    opt.textContent = issue;
-    if (issue === currentIssue) opt.selected = true;
-    issueSelect.appendChild(opt);
-  });
-
-  // Populate funding issue filter
-  const fundIssueSelect = document.getElementById('fundFilterIssue');
-  if (fundIssueSelect) {
-    const currentFundIssue = fundIssueSelect.value;
-    fundIssueSelect.innerHTML = '<option value="">Semua Terbitan</option>';
-    Array.from(issues).sort().forEach(issue => {
-      const opt = document.createElement('option');
-      opt.value = issue;
-      opt.textContent = issue;
-      if (issue === currentFundIssue) opt.selected = true;
-      fundIssueSelect.appendChild(opt);
+function populateReviewDropdowns() {
+  ['editor','reviewer','layout'].forEach(function(role) {
+    const sel = document.getElementById('review' + cap(role));
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">-- Pilih ' + cap(role) + ' --</option>';
+    personnel[role].forEach(function(name){
+      const o = document.createElement('option');
+      o.value = name; o.textContent = name;
+      if (name === cur) o.selected = true;
+      sel.appendChild(o);
     });
+  });
+}
+
+function togglePersonnelEdit(btn) {
+  const item = btn.closest('.personnel-item');
+  const input = item.querySelector('.personnel-name-input');
+  const isEditing = !input.readOnly;
+  
+  if (isEditing) {
+    // Save mode
+    const role = input.nextElementSibling.textContent.toLowerCase();
+    updatePersonnelName(role, input);
+    input.readOnly = true;
+    btn.textContent = 'Edit';
+    input.blur();
+  } else {
+    // Edit mode
+    input.readOnly = false;
+    input.focus();
+    input.select();
+    btn.textContent = 'Simpan';
   }
 }
 
-// --- RENDER ---
-function renderAll() { renderStats(); renderArticles(); }
-
-function renderStats() {
-  document.getElementById('statTotal').textContent = articles.length;
-  document.getElementById('statReview').textContent = articles.filter(a => a.status === 'review').length;
-  document.getElementById('statRejected').textContent = articles.filter(a => a.status === 'rejected').length;
-}
-
-function renderArticles() {
-  const list = document.getElementById('articlesList');
-  const filtered = articles.filter(a => {
-    const mf = currentFilter === 'all' || a.status === currentFilter;
-    const ms = !searchQuery || a.title.toLowerCase().includes(searchQuery) || 
-      (a.authors && a.authors.some(author => author.name.toLowerCase().includes(searchQuery))) ||
-      (a.author && a.author.toLowerCase().includes(searchQuery));
-    
-    // Filter by affiliation
-    let ma = true;
-    if (filterAffiliation) {
-      if (a.authors) {
-        ma = a.authors.some(author => author.affiliation === filterAffiliation);
-      } else if (a.affiliation) {
-        ma = a.affiliation === filterAffiliation;
-      } else {
-        ma = false;
-      }
-    }
-    
-    // Filter by issue
-    const mi = !filterIssue || a.issue === filterIssue;
-    
-    return mf && ms && ma && mi;
-  });
+async function updatePersonnelName(role, inputEl) {
+  const oldName = inputEl.dataset.originalName;
+  const newName = inputEl.value.trim();
   
-  document.getElementById('dashboardSubtitle').textContent = filtered.length + ' artikel ditampilkan';
-  if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>Belum ada artikel</p><p style="font-size:12px;margin-top:4px">Tambahkan artikel menggunakan form di kiri</p></div>`;
+  if (!newName || newName === oldName) {
+    // No change, just switch back to readonly
+    inputEl.readOnly = true;
+    inputEl.closest('.personnel-item').querySelector('.btn-edit').textContent = 'Edit';
     return;
   }
   
-  // Group by issue for visual separation
-  const grouped = {};
-  filtered.forEach(a => {
-    const issue = a.issue || 'Belum ada terbitan';
-    if (!grouped[issue]) grouped[issue] = [];
-    grouped[issue].push(a);
-  });
+  // Check if name already exists
+  if (personnel[role].includes(newName)) {
+    showToast('Nama sudah ada','error');
+    renderPersonnel();
+    return;
+  }
   
-  const html = [];
-  Object.keys(grouped).sort().reverse().forEach((issue, idx) => {
-    if (idx > 0) {
-      html.push(`<div class="issue-divider"><span class="issue-divider-label">${escapeHtml(issue)}</span></div>`);
-    } else if (Object.keys(grouped).length > 1) {
-      html.push(`<div style="font-size:11px;font-weight:600;color:var(--blue-600);margin-bottom:8px;text-align:center;">${escapeHtml(issue)}</div>`);
+  // Update in database
+  const { error: deleteError } = await sb.from('personnel').delete().eq('role', role).eq('name', oldName);
+  if (deleteError) {
+    showToast('Gagal update: ' + deleteError.message, 'error');
+    renderPersonnel();
+    return;
+  }
+  
+  const { error: insertError } = await sb.from('personnel').insert({ role, name: newName });
+  if (insertError) {
+    showToast('Gagal update: ' + insertError.message, 'error');
+    renderPersonnel();
+    return;
+  }
+  
+  // Update local array
+  const idx = personnel[role].indexOf(oldName);
+  if (idx !== -1) personnel[role][idx] = newName;
+  
+  // Update the data attribute for future edits
+  inputEl.dataset.originalName = newName;
+  
+  renderPersonnel();
+  populateReviewDropdowns();
+  showToast('Nama berhasil diupdate','success');
+}
+
+// ============================================================
+//  FORM HELPERS
+// ============================================================
+function addAuthorField(name, affiliation, email) {
+  const box = document.getElementById('authorsBox');
+  const idx = authorCount++;
+  const entry = document.createElement('div');
+  entry.className = 'author-entry';
+  entry.dataset.idx = idx;
+  entry.innerHTML =
+    '<div class="author-row">' +
+      '<input type="text" class="author-name" placeholder="Nama penulis ' + (idx+1) + '..." value="' + escH(name||'') + '" />' +
+      '<input type="text" class="author-affil" placeholder="Afiliasi..." value="' + escH(affiliation||'') + '" />' +
+      '<button class="author-remove" onclick="removeAuthorField(this)" title="Hapus">✕</button>' +
+    '</div>' +
+    '<div class="author-email-row">' +
+      '<label style="font-size:11px;color:var(--gray-400);">Email:</label>' +
+      '<input type="email" class="author-email" placeholder="email@domain.com" value="' + escH(email||'') + '" style="font-size:12px;" />' +
+      '<div></div>' +
+    '</div>';
+  box.appendChild(entry);
+}
+
+function removeAuthorField(btn) {
+  const box = document.getElementById('authorsBox');
+  if (box.children.length <= 1) { showToast('Minimal satu penulis','error'); return; }
+  btn.closest('.author-entry').remove();
+}
+
+function getAuthors() {
+  return Array.from(document.querySelectorAll('#authorsBox .author-entry')).map(function(e){
+    return {
+      name:        e.querySelector('.author-name').value.trim(),
+      affiliation: e.querySelector('.author-affil').value.trim(),
+      email:       e.querySelector('.author-email').value.trim()
+    };
+  }).filter(function(a){return a.name||a.affiliation;});
+}
+
+function setAuthorsInForm(authors) {
+  document.getElementById('authorsBox').innerHTML = '';
+  authorCount = 0;
+  if (!authors || !authors.length) { addAuthorField(); return; }
+  authors.forEach(function(a){addAuthorField(a.name, a.affiliation, a.email);});
+}
+
+function clearForm() {
+  document.getElementById('fieldTitle').value = '';
+  document.getElementById('fieldDoi').value   = '';
+  document.getElementById('fieldDate').valueAsDate = new Date();
+  document.getElementById('authorsBox').innerHTML = ''; authorCount = 0;
+  addAuthorField();
+  ['errTitle','errDate','errAuthors'].forEach(function(id){document.getElementById(id).classList.remove('show');});
+}
+
+function cancelEdit() {
+  editingId = null; clearForm();
+  document.getElementById('formPanelTitle').textContent = 'Tambah Artikel';
+  document.getElementById('formPanelSub').textContent   = 'Formulir pengajuan artikel baru';
+  document.getElementById('formModeIndicator').classList.remove('show');
+  document.getElementById('btnCancelEdit').style.display = 'none';
+  document.getElementById('btnSubmit').textContent = 'Simpan Artikel';
+}
+
+function startEdit(id) {
+  const a = articles.find(function(x){return x.id===id;});
+  if (!a) return;
+  editingId = id;
+  document.getElementById('fieldTitle').value = a.title;
+  document.getElementById('fieldDate').value  = a.date;
+  document.getElementById('fieldDoi').value   = a.doi || '';
+  setAuthorsInForm(a.authors);
+  document.getElementById('formPanelTitle').textContent = 'Edit Artikel';
+  document.getElementById('formPanelSub').textContent   = 'Memperbarui data artikel';
+  document.getElementById('formModeIndicator').classList.add('show');
+  document.getElementById('btnCancelEdit').style.display = 'inline-flex';
+  document.getElementById('btnSubmit').textContent = 'Perbarui Artikel';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderAll() {
+  renderStats();
+  populateAdvFilters();
+  applyFilters();
+}
+
+function renderStats() {
+  document.getElementById('statTotal').textContent     = articles.length;
+  document.getElementById('statReview').textContent    = articles.filter(function(a){return a.status==='review';}).length;
+  document.getElementById('statPublished').textContent = articles.filter(function(a){return a.status==='published';}).length;
+}
+
+function populateAdvFilters() {
+  const afils  = new Set();
+  const issues = new Set();
+  articles.forEach(function(a){
+    (a.authors||[]).forEach(function(au){if(au.affiliation)afils.add(au.affiliation);});
+    if(a.issue) issues.add(a.issue);
+  });
+  const afSel = document.getElementById('filterAffiliation');
+  const curAf = afSel.value;
+  afSel.innerHTML = '<option value="">Semua Afiliasi</option>';
+  [...afils].sort().forEach(function(af){const o=document.createElement('option');o.value=af;o.textContent=af;if(af===curAf)o.selected=true;afSel.appendChild(o);});
+  const isSel = document.getElementById('filterIssue');
+  const curIs = isSel.value;
+  isSel.innerHTML = '<option value="">Semua Terbitan</option>';
+  [...issues].sort().forEach(function(is){const o=document.createElement('option');o.value=is;o.textContent=is;if(is===curIs)o.selected=true;isSel.appendChild(o);});
+}
+
+function setFilter(btn, filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function resetFilters() {
+  document.getElementById('filterAffiliation').value = '';
+  document.getElementById('filterIssue').value = '';
+  applyFilters();
+}
+
+function applyFilters() {
+  const q  = document.getElementById('searchInput').value.toLowerCase();
+  const af = document.getElementById('filterAffiliation').value;
+  const is = document.getElementById('filterIssue').value;
+  const filtered = articles.filter(function(a){
+    if (currentFilter !== 'all' && a.status !== currentFilter) return false;
+    if (q) {
+      const names = (a.authors||[]).map(function(au){return au.name+' '+au.affiliation;}).join(' ').toLowerCase();
+      if (!a.title.toLowerCase().includes(q) && !names.includes(q)) return false;
     }
-    grouped[issue].forEach(a => html.push(renderCard(a)));
+    if (af && !(a.authors||[]).some(function(au){return au.affiliation===af;})) return false;
+    if (is && a.issue !== is) return false;
+    return true;
   });
-  
-  list.innerHTML = html.join('');
+  document.getElementById('dashboardSubtitle').textContent = filtered.length + ' artikel ditampilkan';
+  const list = document.getElementById('articlesList');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>Belum ada artikel</p></div>';
+    updateBulkActions();
+    return;
+  }
+  list.innerHTML = filtered.map(renderCard).join('');
+  updateBulkActions();
+}
+
+function toggleArticleSelect(id, checked) {
+  if (checked) selectedArticleIds.add(id);
+  else selectedArticleIds.delete(id);
+  updateBulkActions();
+}
+
+function toggleSelectAll(checked) {
+  const rows = articles.filter(function(a){
+    if (currentFilter !== 'all' && a.status !== currentFilter) return false;
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (q) {
+      const names = (a.authors||[]).map(function(au){return au.name+' '+au.affiliation;}).join(' ').toLowerCase();
+      if (!a.title.toLowerCase().includes(q) && !names.includes(q)) return false;
+    }
+    const af = document.getElementById('filterAffiliation').value;
+    const is = document.getElementById('filterIssue').value;
+    if (af && !(a.authors||[]).some(function(au){return au.affiliation===af;})) return false;
+    if (is && a.issue !== is) return false;
+    return true;
+  });
+  rows.forEach(function(a){
+    if (checked) selectedArticleIds.add(a.id);
+    else selectedArticleIds.delete(a.id);
+  });
+  applyFilters();
+}
+
+function updateBulkActions() {
+  const count = selectedArticleIds.size;
+  const bar = document.getElementById('bulkActionsBar');
+  const label = document.getElementById('bulkSelectionCount');
+  const selectAll = document.getElementById('selectAllCheckbox');
+  if (count) {
+    bar.style.display = 'flex';
+    label.textContent = '('+count+' artikel dipilih)';
+  } else {
+    bar.style.display = 'none';
+    label.textContent = '';
+  }
+  if (selectAll) selectAll.checked = false;
+}
+
+async function deleteSelectedArticles() {
+  if (!selectedArticleIds.size) { showToast('Tidak ada artikel terpilih','error'); return; }
+  if (!window.confirm('Hapus '+selectedArticleIds.size+' artikel yang dipilih?')) return;
+  const ids = Array.from(selectedArticleIds);
+  const { error } = await sb.from('articles').delete().in('id', ids);
+  if (error) { showToast('Hapus gagal: '+error.message,'error'); return; }
+  articles = articles.filter(function(a){return !selectedArticleIds.has(a.id);});
+  selectedArticleIds.clear();
+  applyFilters();
+  showToast(ids.length+' artikel berhasil dihapus','success');
+}
+
+function clearSelections() {
+  selectedArticleIds.clear();
+  applyFilters();
 }
 
 function renderCard(a) {
-  const badgeMap = {
-    submitted:'<span class="status-badge badge-submitted">Diajukan</span>',
-    review:'<span class="status-badge badge-review">Review</span>',
-    rejected:'<span class="status-badge badge-rejected">Ditolak</span>',
-    published:'<span class="status-badge badge-published">Published</span>'
-  };
+  const badges = {submitted:'<span class="status-badge badge-submitted">Diajukan</span>',review:'<span class="status-badge badge-review">Review</span>',rejected:'<span class="status-badge badge-rejected">Ditolak</span>',published:'<span class="status-badge badge-published">Terbit</span>'};
   const dateFmt = a.date ? new Date(a.date+'T12:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '-';
-
-  // Get authors display
-  let authorsDisplay = '';
-  if (a.authors && a.authors.length > 0) {
-    authorsDisplay = a.authors.map(author => `
-      <span class="meta-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        ${escapeHtml(author.name)}
-      </span>
-      <span class="meta-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        ${escapeHtml(author.affiliation)}
-      </span>
-    `).join('');
-  } else if (a.author) {
-    authorsDisplay = `
-      <span class="meta-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        ${escapeHtml(a.author)}
-      </span>
-      <span class="meta-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        ${escapeHtml(a.affiliation || '')}
-      </span>
-    `;
-  }
-
-  // Check if all checklist items are checked
-  const allChecked = a.status === 'review' && a.checklist.turnitin && a.checklist.eyd && a.checklist.layout;
-
-  const checklistHTML = a.status === 'review' ? `
-    <div class="checklist">
-      ${['turnitin','eyd','layout'].map(k => `
-        <label class="check-item ${a.checklist[k]?'checked':''}" onclick="toggleCheck('${a.id}','${k}')">
-          <div class="check-dot"><div class="check-dot-inner"></div></div>
-          ${k.toUpperCase()}
-        </label>`).join('')}
-    </div>` : '<div style="font-size:12px;color:var(--gray-400)">—</div>';
-
-  const reviewInfo = a.status === 'review' ? `
-    <div class="review-section">
-      <div class="review-section-title">Informasi Review</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;">
-        <div class="review-info-item"><div class="review-info-label">Editor</div><div class="review-info-value">${escapeHtml(a.editor)||'—'}</div></div>
-        <div class="review-info-item"><div class="review-info-label">Reviewer</div><div class="review-info-value">${escapeHtml(a.reviewer)||'—'}</div></div>
-        <div class="review-info-item"><div class="review-info-label">Layout</div><div class="review-info-value">${escapeHtml(a.layoutWorker)||'—'}</div></div>
-        <div class="review-info-item"><div class="review-info-label">Terbitan</div><div class="review-info-value">${escapeHtml(a.issue)||'—'}</div></div>
-        ${a.email ? `<div class="review-info-item"><div class="review-info-label">Email</div><div class="review-info-value">${escapeHtml(a.email)}</div></div>` : ''}
-        ${a.doi ? `<div class="review-info-item"><div class="review-info-label">DOI</div><div class="review-info-value" style="font-size:10px;word-break:break-all;">${escapeHtml(a.doi)}</div></div>` : ''}
-      </div>
-    </div>` : '';
-
-  const actions = a.status === 'submitted'
-    ? `<button class="btn btn-review btn-sm" onclick="openReviewModal('${a.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Review</button><button class="btn btn-reject btn-sm" onclick="rejectArticle('${a.id}')">Tolak</button>`
-    : a.status === 'review'
-    ? `<button class="btn btn-review btn-sm" onclick="openReviewModal('${a.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Edit Review</button>
-    ${allChecked ? `<button class="btn btn-publish btn-sm" onclick="publishArticle('${a.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>Siap Publish</button>` : ''}`
+  const authorLine = (a.authors||[]).map(function(au){return escH(au.name) + (au.affiliation?'<span style="color:var(--gray-400)"> · '+escH(au.affiliation)+'</span>':'');}).join('<span style="color:var(--gray-300)"> | </span>');
+  const emails = (a.authors||[]).filter(function(au){return au.email;}).map(function(au){return '<a href="mailto:'+escH(au.email)+'" style="color:var(--blue-600);font-size:11px;">'+escH(au.email)+'</a>';}).join(', ');
+  const selectedCheck = selectedArticleIds.has(a.id) ? 'checked' : '';
+  const allChecked = a.checklist && a.checklist.turnitin && a.checklist.eyd && a.checklist.layout;
+  const checklistHTML = (a.status==='review'||a.status==='published')
+    ? '<div class="checklist">'+['turnitin','eyd','layout'].map(function(k){return '<label class="check-item '+(a.checklist&&a.checklist[k]?'checked':'')+'" onclick="toggleCheck(\''+a.id+'\',\''+k+'\')"><div class="check-dot"><div class="check-dot-inner"></div></div>'+k.toUpperCase()+'</label>';}).join('')+'</div>'
+    : '<div style="font-size:12px;color:var(--gray-400)">—</div>';
+  const reviewInfo = (a.status==='review'||a.status==='published')
+    ? '<div class="review-section"><div class="review-section-title">Informasi Review</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"><div class="ri-item"><div class="ri-label">Editor</div><div class="ri-value">'+escH(a.editor||'—')+'</div></div><div class="ri-item"><div class="ri-label">Reviewer</div><div class="ri-value">'+escH(a.reviewer||'—')+'</div></div><div class="ri-item"><div class="ri-label">Layout</div><div class="ri-value">'+escH(a.layoutWorker||'—')+'</div></div><div class="ri-item"><div class="ri-label">Terbitan</div><div class="ri-value">'+escH(a.issue||'—')+'</div></div></div>'+(a.doi?'<div style="margin-top:5px;font-size:11px;">DOI: <a href="'+escH(a.doi)+'" target="_blank" style="color:var(--blue-600);">'+escH(a.doi)+'</a></div>':'')+'</div>'
     : '';
-
-  return `<div class="article-card">
-    <div class="article-card-header">
-      <div class="article-title">${escapeHtml(a.title)}</div>
-      ${badgeMap[a.status]||''}
-    </div>
-    <div class="article-meta">
-      ${authorsDisplay}
-      <span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11z"/></svg>${dateFmt}</span>
-    </div>
-    ${reviewInfo}
-    <div class="article-card-body">
-      ${checklistHTML}
-      <div class="card-actions">
-        ${actions}
-        <button class="btn btn-edit btn-sm" onclick="startEdit('${a.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Edit</button>
-        <button class="btn btn-delete btn-sm" onclick="deleteArticle('${a.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-      </div>
-    </div>
-  </div>`;
+  const actions = a.status==='submitted'
+    ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Review</button><button class="btn btn-reject btn-sm" onclick="rejectArticle(\''+a.id+'\')">Tolak</button>'
+    : a.status==='review'
+    ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit Review</button>'+(allChecked?'<button class="btn btn-publish btn-sm" onclick="publishArticle(\''+a.id+'\')">Siap Publish</button>':'')
+    : a.status==='published'
+    ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit</button>'
+    : '';
+  return '<div class="article-card"><div class="article-card-header" style="align-items:center;"><label class="bulk-checkbox"><input type="checkbox" onchange="toggleArticleSelect(\''+a.id+'\', this.checked)" '+selectedCheck+' /></label><div class="article-title">'+escH(a.title)+'</div>'+(badges[a.status]||'')+'</div><div class="article-meta"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>'+authorLine+'</span></span></div>'+(emails?'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'+emails+'</span></div>':'')+'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11z"/></svg>'+dateFmt+'</span></div>'+reviewInfo+'<div class="article-card-body">'+checklistHTML+'<div class="card-actions">'+actions+'<button class="btn btn-edit btn-sm" onclick="startEdit(\''+a.id+'\')">Edit</button><button class="btn btn-delete btn-sm" onclick="deleteArticle(\''+a.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></div></div>';
 }
 
-// --- FUNDING ---
+// ============================================================
+//  FUNDING
+// ============================================================
 function getFundingRows() {
   const rows = [];
-  articles.filter(a => a.status === 'review').forEach(a => {
-    if (a.editor) rows.push({articleId:a.id, articleTitle:a.title, issue:a.issue, name:a.editor, role:'editor', payStatus:'pending', amount:null});
-    if (a.reviewer) rows.push({articleId:a.id, articleTitle:a.title, issue:a.issue, name:a.reviewer, role:'reviewer', payStatus:'pending', amount:null});
-    if (a.layoutWorker) rows.push({articleId:a.id, articleTitle:a.title, issue:a.issue, name:a.layoutWorker, role:'layout', payStatus:'pending', amount:null});
+  articles.filter(function(a){return a.status==='review'||a.status==='published';}).forEach(function(a){
+    const push = function(name, role){if(name)rows.push({articleId:a.id,articleTitle:a.title,issue:a.issue||'Belum ditentukan',name,role});};
+    push(a.editor,'editor'); push(a.reviewer,'reviewer'); push(a.layoutWorker,'layout');
   });
   return rows;
 }
 
 function renderFunding() {
-  const roleFilter = document.getElementById('fundFilterRole').value;
-  const nameFilter = document.getElementById('fundFilterName').value.toLowerCase();
+  const roleFilter  = document.getElementById('fundFilterRole').value;
   const issueFilter = document.getElementById('fundFilterIssue').value;
-  
-  let rows = getFundingRows();
-  if (roleFilter !== 'all') rows = rows.filter(r => r.role === roleFilter);
-  if (nameFilter) rows = rows.filter(r => r.name.toLowerCase().includes(nameFilter));
-  if (issueFilter) rows = rows.filter(r => r.issue === issueFilter);
-
-  // Summary cards
+  const nameFilter  = document.getElementById('fundFilterName').value.toLowerCase();
   const allRows = getFundingRows();
-  const totalRecipients = new Set(allRows.map(r => r.name)).size;
-  const roleCount = { editor: allRows.filter(r => r.role==='editor').length, reviewer: allRows.filter(r => r.role==='reviewer').length, layout: allRows.filter(r => r.role==='layout').length };
-  document.getElementById('fundingSummary').innerHTML = `
-    <div class="fund-card accent-blue"><div class="fund-card-label">Total Penugasan</div><div class="fund-card-value">${allRows.length}</div><div class="fund-card-sub">dari ${articles.filter(a=>a.status==='review').length} artikel review</div></div>
-    <div class="fund-card accent-blue"><div class="fund-card-label">Editor</div><div class="fund-card-value">${roleCount.editor}</div><div class="fund-card-sub">penugasan</div></div>
-    <div class="fund-card accent-green"><div class="fund-card-label">Reviewer</div><div class="fund-card-value">${roleCount.reviewer}</div><div class="fund-card-sub">penugasan</div></div>
-    <div class="fund-card accent-purple"><div class="fund-card-label">Layout</div><div class="fund-card-value">${roleCount.layout}</div><div class="fund-card-sub">penugasan</div></div>
-  `;
+  const rc = { editor:allRows.filter(function(r){return r.role==='editor';}).length, reviewer:allRows.filter(function(r){return r.role==='reviewer';}).length, layout:allRows.filter(function(r){return r.role==='layout';}).length };
+  document.getElementById('fundingSummary').innerHTML =
+    '<div class="fund-card ac-blue"><div class="fund-card-label">Total Penugasan</div><div class="fund-card-value">'+allRows.length+'</div></div>'+
+    '<div class="fund-card ac-blue"><div class="fund-card-label">Editor</div><div class="fund-card-value">'+rc.editor+'</div></div>'+
+    '<div class="fund-card ac-green"><div class="fund-card-label">Reviewer</div><div class="fund-card-value">'+rc.reviewer+'</div></div>'+
+    '<div class="fund-card ac-purple"><div class="fund-card-label">Layout</div><div class="fund-card-value">'+rc.layout+'</div></div>';
 
-  const tbody = document.getElementById('fundingTableBody');
-  if (!rows.length) {
-    tbody.innerHTML = `<div class="empty-funding"><p>Belum ada penugasan / No assignments yet</p><p style="font-size:12px;margin-top:6px;color:var(--gray-400)">Artikel perlu masuk tahap Review terlebih dahulu</p></div>`;
-    return;
-  }
+  // Populate issue filter
+  const issues = new Set(allRows.map(function(r){return r.issue;}));
+  const isSel = document.getElementById('fundFilterIssue');
+  const curIs = isSel.value;
+  isSel.innerHTML = '<option value="">Semua Terbitan</option>';
+  [...issues].sort().forEach(function(is){const o=document.createElement('option');o.value=is;o.textContent=is;if(is===curIs)o.selected=true;isSel.appendChild(o);});
 
-  // Group by issue
+  let rows = allRows.filter(function(r){
+    if (roleFilter && r.role !== roleFilter) return false;
+    if (issueFilter && r.issue !== issueFilter) return false;
+    if (nameFilter && !r.name.toLowerCase().includes(nameFilter)) return false;
+    return true;
+  });
+
+  const content = document.getElementById('fundingContent');
+  if (!rows.length) { content.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-400);">Tidak ada data</div>'; return; }
+
   const grouped = {};
-  rows.forEach(r => {
-    const issue = r.issue || 'Belum ada terbitan';
-    if (!grouped[issue]) grouped[issue] = [];
-    grouped[issue].push(r);
-  });
-
+  rows.forEach(function(r){if(!grouped[r.issue])grouped[r.issue]=[];grouped[r.issue].push(r);});
   const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
-  const html = [];
-  
-  Object.keys(grouped).sort().reverse().forEach((issue, issueIdx) => {
-    if (issueIdx > 0) {
-      html.push(`<tr><td colspan="7" style="padding:0;"><div class="issue-divider"><span class="issue-divider-label">${escapeHtml(issue)}</span></div></td></tr>`);
-    }
-    
-    grouped[issue].forEach((r, i) => {
-      html.push(`<tr>
-        <td style="color:var(--gray-400);font-size:12px;">${i+1}</td>
-        <td style="font-weight:500;">${escapeHtml(r.name)}</td>
-        <td><span class="role-tag role-${r.role}">${roleLabel[r.role]}</span></td>
-        <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(r.articleTitle)}">${escapeHtml(r.articleTitle)}</td>
-        <td style="font-size:12px;color:var(--gray-600);">${escapeHtml(r.issue)||'—'}</td>
-        <td class="amount-cell"><span class="amount-tbd">Menyusul</span></td>
-        <td><span class="fund-status-badge fund-pending">Belum Dibayar</span></td>
-      </tr>`);
-    });
+  content.innerHTML = Object.keys(grouped).sort().map(function(issue){
+    const iRows = grouped[issue];
+    return '<div class="issue-group"><div class="issue-group-header"><span class="issue-group-title">'+escH(issue)+'</span><span style="font-size:11px;color:var(--gray-400);">'+iRows.length+' penugasan</span></div><div class="funding-table-wrap"><table class="funding-table"><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul Artikel</th><th>Biaya</th><th>Status</th></tr></thead><tbody>'+iRows.map(function(r,i){return '<tr><td style="color:var(--gray-400);">'+(i+1)+'</td><td style="font-weight:500;">'+escH(r.name)+'</td><td><span class="role-tag role-'+r.role+'">'+roleLabel[r.role]+'</span></td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+escH(r.articleTitle)+'">'+escH(r.articleTitle)+'</td><td><span class="amount-tbd">Menyusul</span></td><td><span class="fund-pending">Belum Dibayar</span></td></tr>';}).join('')+'</tbody></table></div></div>';
+  }).join('');
+}
+
+function exportFundingCSV() {
+  const rows = getFundingRows();
+  if (!rows.length) { showToast('Tidak ada data','error'); return; }
+  const lines = [['No','Terbitan','Nama','Peran','Judul Artikel','Biaya','Status'].join(',')];
+  rows.forEach(function(r,i){lines.push([i+1,'"'+r.issue+'"','"'+r.name+'"',r.role,'"'+r.articleTitle.replace(/"/g,'""')+'"','Menyusul','Belum Dibayar'].join(','));});
+  const blob = new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='pendanaan-al-usariyah.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV berhasil diunduh','success');
+}
+
+function exportArticlesExcel() {
+  if (!articles.length) { showToast('Tidak ada data artikel','error'); return; }
+  const headers = ['No','Judul Artikel','Penulis','Afiliasi','Email Penulis','Editor','Reviewer','Layouter','Tanggal Masuk','DOI','Terbitan'];
+  const rows = articles.map(function(a,i){
+    const names = (a.authors||[]).map(function(au){return au.name||'';}).filter(Boolean).join('; ');
+    const affils = (a.authors||[]).map(function(au){return au.affiliation||'';}).filter(Boolean).join('; ');
+    const emails = (a.authors||[]).map(function(au){return au.email||'';}).filter(Boolean).join('; ');
+    return [
+      i + 1,
+      a.title || '',
+      names,
+      affils,
+      emails,
+      a.editor || '',
+      a.reviewer || '',
+      a.layoutWorker || '',
+      a.date || '',
+      a.doi || '',
+      a.issue || ''
+    ];
   });
-
-  tbody.innerHTML = `<table class="funding-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Nama / Name</th>
-        <th>Peran / Role</th>
-        <th>Judul Artikel</th>
-        <th>Terbitan</th>
-        <th>Biaya / Fee</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${html.join('')}
-    </tbody>
-  </table>`;
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows));
+  ws['!cols'] = [{wch:5},{wch:40},{wch:30},{wch:25},{wch:30},{wch:20},{wch:20},{wch:20},{wch:15},{wch:30},{wch:25}];
+  XLSX.utils.book_append_sheet(wb,ws,'Artikel');
+  XLSX.writeFile(wb,'data-artikel-al-usariyah.xlsx');
+  showToast('Excel berhasil diunduh','success');
 }
 
-function exportFunding(format) {
-  const roleFilter = document.getElementById('fundFilterRole').value;
-  const nameFilter = document.getElementById('fundFilterName').value.toLowerCase();
-  const issueFilter = document.getElementById('fundFilterIssue').value;
-  
-  let rows = getFundingRows();
-  if (roleFilter !== 'all') rows = rows.filter(r => r.role === roleFilter);
-  if (nameFilter) rows = rows.filter(r => r.name.toLowerCase().includes(nameFilter));
-  if (issueFilter) rows = rows.filter(r => r.issue === issueFilter);
-
-  if (format === 'excel') {
-    exportToExcel(rows);
-  } else if (format === 'pdf') {
-    exportToPDF(rows);
-  }
+function exportFundingPDF() {
+  const rows = getFundingRows();
+  if (!rows.length) { showToast('Tidak ada data','error'); return; }
+  const grouped = {};
+  rows.forEach(function(r){if(!grouped[r.issue])grouped[r.issue]=[];grouped[r.issue].push(r);});
+  const rl = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pendanaan</title><style>body{font-family:sans-serif;font-size:12px;margin:2cm;}h1{font-size:18px;}h2{font-size:14px;color:#185FA5;border-bottom:2px solid #185FA5;padding-bottom:4px;margin:16px 0 8px;}table{width:100%;border-collapse:collapse;}th{background:#f7f8fa;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;border-bottom:1px solid #d8dbe2;}td{padding:7px 10px;border-bottom:1px solid #eef0f3;}</style></head><body><h1>Laporan Pendanaan — Al Usariyah</h1><p style="color:#9ea4b0;font-size:11px;margin-bottom:20px;">'+new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</p>'+Object.keys(grouped).sort().map(function(issue){return '<h2>'+issue+'</h2><table><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul</th><th>Biaya</th></tr></thead><tbody>'+grouped[issue].map(function(r,i){return '<tr><td>'+(i+1)+'</td><td><strong>'+r.name+'</strong></td><td>'+rl[r.role]+'</td><td>'+r.articleTitle+'</td><td style="color:#9ea4b0;font-style:italic;">Menyusul</td></tr>';}).join('')+'<\/tbody><\/table>';}).join('')+'<script>window.onload=function(){window.print();}<\/script><\/body><\/html>';
+  const win = window.open('','_blank'); win.document.write(html); win.document.close();
+  showToast('Membuka jendela cetak...','success');
 }
-
-function exportToExcel(rows) {
-  const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
-  let csv = 'No,Nama,Peran,Judul Artikel,Terbitan,Biaya,Status\n';
-  rows.forEach((r, i) => {
-    csv += `${i+1},"${r.name}","${roleLabel[r.role]}","${r.articleTitle}","${r.issue||'-'}","Menyusul","Belum Dibayar"\n`;
-  });
-  
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `funding_${new Date().toISOString().split('T')[0]}.csv`;
-  link.click();
-  showToast('Data berhasil diexport ke Excel', 'success');
-}
-
-function exportToPDF(rows) {
-  const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
-  let html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Laporan Pendanaan</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { text-align: center; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        .footer { margin-top: 20px; text-align: center; font-size: 11px; color: #666; }
-      </style>
-    </head>
-    <body>
-      <h1>Laporan Pendanaan Al Usariyah</h1>
-      <p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
-      <p>Total Penugasan: ${rows.length}</p>
-      <table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Peran</th>
-            <th>Judul Artikel</th>
-            <th>Terbitan</th>
-            <th>Biaya</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map((r, i) => `
-            <tr>
-              <td>${i+1}</td>
-              <td>${escapeHtml(r.name)}</td>
-              <td>${roleLabel[r.role]}</td>
-              <td>${escapeHtml(r.articleTitle)}</td>
-              <td>${escapeHtml(r.issue)||'-'}</td>
-              <td>Menyusul</td>
-              <td>Belum Dibayar</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      <div class="footer">Generated by Al Usariyah Journal Article Tracker</div>
-    </body>
-    </html>
-  `;
-  
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.onload = function() {
-    printWindow.print();
-  };
-  showToast('PDF siap untuk dicetak', 'success');
-}
-
-// --- UTILS ---
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function showToast(msg, type='') {
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast ' + type;
-  t.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> ${msg}`;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-document.getElementById('reviewModal').addEventListener('click', function(e) {
-  if (e.target === this) closeReviewModal();
-});
 
 // ============================================================
-//  GOOGLE SHEETS SYNC MODULE  v3 — iframe POST
+//  PAGE NAVIGATION
 // ============================================================
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyaITX9GeEkfUwjphWmJ6cGYMdB2EaEMR0deXQBY1ioenQztmc5OLcYmlWFU0iGV__Bcg/exec';
-let sheetsConnected = false;
-let autoSyncEnabled = false;
-
-// ── TEST KONEKSI ──
-// Pakai iframe: load URL Apps Script, kalau iframe onload terpanggil = URL valid & accessible
-async function testConnection() {
-  setSyncState('syncing', 'Menghubungkan...');
-  document.getElementById('btnTestConn').disabled = true;
-  try {
-    await pingViaIframe();
-    sheetsConnected = true;
-    setSyncState('connected', 'Terhubung ke Google Sheets ✓');
-    document.getElementById('btnSyncAll').disabled = false;
-    document.getElementById('btnPullSheets').disabled = false;
-    showToast('Berhasil terhubung ke Google Sheets!', 'success');
-  } catch(e) {
-    sheetsConnected = false;
-    setSyncState('error', 'Gagal: ' + e.message);
-    showToast('Koneksi gagal: ' + e.message, 'error');
-  }
-  document.getElementById('btnTestConn').disabled = false;
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'funding')   renderFunding();
+  if (name === 'statistik') renderCharts();
 }
-
-function pingViaIframe() {
-  return new Promise((resolve, reject) => {
-    // Bersihkan iframe lama
-    const old = document.getElementById('_sheetsIframe');
-    if (old) old.remove();
-
-    const iframe = document.createElement('iframe');
-    iframe.id = '_sheetsIframe';
-    iframe.style.cssText = 'display:none;width:0;height:0;border:0;position:absolute;';
-    iframe.src = SHEETS_URL + '?action=ping';
-
-    const timer = setTimeout(() => {
-      iframe.remove();
-      reject(new Error('Timeout 10s — pastikan Apps Script sudah di-deploy ulang sebagai "Anyone"'));
-    }, 10000);
-
-    iframe.onload = () => {
-      clearTimeout(timer);
-      // iframe load = URL reachable = connected
-      resolve(true);
-    };
-    iframe.onerror = () => {
-      clearTimeout(timer);
-      iframe.remove();
-      reject(new Error('URL tidak dapat dijangkau'));
-    };
-    document.body.appendChild(iframe);
-  });
-}
-
-// ── SYNC SEMUA ARTIKEL ──
-async function syncAllToSheets() {
-  if (!sheetsConnected) { showToast('Hubungkan dulu ke Google Sheets', 'error'); return; }
-  document.getElementById('btnSyncAll').disabled = true;
-  try {
-    // Step 1: sync artikel
-    setSyncState('syncing', 'Sync artikel (' + articles.length + ')...');
-    await postToSheets({ action: 'sync', articles: articles });
-
-    // Delay 1.5s antar request — Apps Script butuh jeda
-    await new Promise(r => setTimeout(r, 1500));
-
-    // Step 2: sync personel
-    setSyncState('syncing', 'Sync personel...');
-    await postToSheets({ action: 'syncPersonnel', personnel: personnel });
-
-    setSyncState('connected', 'Sync selesai ✓ — ' + articles.length + ' artikel');
-    setLastSyncTime();
-    showToast('Sync berhasil!', 'success');
-  } catch(e) {
-    setSyncState('error', 'Sync gagal: ' + e.message);
-    showToast('Sync gagal: ' + e.message, 'error');
-  }
-  document.getElementById('btnSyncAll').disabled = false;
-}
-
-// ── AUTO SYNC: add/update ──
-async function autoSyncArticle(article) {
-  if (!sheetsConnected || !autoSyncEnabled) return;
-  setSyncState('syncing', 'Auto-sync...');
-  try {
-    await postToSheets({ action: 'addRow', article: article });
-    setSyncState('connected', 'Auto-sync ✓');
-    setLastSyncTime();
-  } catch(e) {
-    setSyncState('error', 'Auto-sync gagal');
-  }
-}
-
-// ── AUTO SYNC: delete ──
-async function autoSyncDelete(articleId) {
-  if (!sheetsConnected || !autoSyncEnabled) return;
-  setSyncState('syncing', 'Menghapus dari Sheets...');
-  try {
-    await postToSheets({ action: 'deleteRow', articleId: articleId });
-    setSyncState('connected', 'Hapus dari Sheets ✓');
-    setLastSyncTime();
-  } catch(e) {
-    setSyncState('error', 'Hapus gagal');
-  }
-}
-
-// ── POST via JSONP GET — paling reliable dari file lokal ──
-// Kirim data sebagai URL param, Apps Script baca e.parameter.payload
-// Untuk data besar: chunk per 10 artikel
-async function postToSheets(payload) {
-  // Untuk sync artikel — chunk per 10
-  if (payload.action === 'sync' && payload.articles && payload.articles.length > 10) {
-    const chunks = [];
-    for (let i = 0; i < payload.articles.length; i += 10) {
-      chunks.push(payload.articles.slice(i, i + 10));
-    }
-    // First chunk: action=syncStart (clear sheet + write chunk 1)
-    await sendGET({ action: 'syncStart', articles: chunks[0] });
-    for (let i = 1; i < chunks.length; i++) {
-      await new Promise(r => setTimeout(r, 800));
-      await sendGET({ action: 'syncAppend', articles: chunks[i] });
-    }
-    return { ok: true };
-  }
-  return await sendGET(payload);
-}
-
-// Kirim via JSONP GET — bisa baca response, tidak ada CORS issue
-function sendGET(payload) {
-  return new Promise((resolve, reject) => {
-    const cb = '_cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      delete window[cb]; script.remove();
-      // Timeout — anggap terkirim (GET ke Apps Script hampir selalu sampai)
-      resolve({ ok: true, message: 'sent (timeout ok)' });
-    }, 10000);
-    window[cb] = function(data) {
-      clearTimeout(timer); delete window[cb]; script.remove();
-      resolve(data);
-    };
-    script.onerror = () => {
-      clearTimeout(timer); delete window[cb];
-      reject(new Error('Script load error'));
-    };
-    // Encode payload as URL param
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    script.src = SHEETS_URL + '?callback=' + cb + '&payload=' + encoded;
-    document.head.appendChild(script);
-  });
-}
-
-// ── TOGGLE AUTO-SYNC ──
-function toggleAutoSync() {
-  autoSyncEnabled = document.getElementById('autoSyncToggle').checked;
-  if (autoSyncEnabled && !sheetsConnected) {
-    showToast('Test koneksi dulu sebelum auto-sync', 'error');
-    document.getElementById('autoSyncToggle').checked = false;
-    autoSyncEnabled = false;
-    return;
-  }
-  showToast(autoSyncEnabled ? 'Auto-sync aktif' : 'Auto-sync dimatikan', autoSyncEnabled ? 'success' : '');
-}
-
-// ── UI HELPERS ──
-function setSyncState(state, label) {
-  document.getElementById('syncDot').className = 'sync-dot ' + state;
-  document.getElementById('syncLabel').textContent = 'Google Sheets: ' + label;
-}
-// ── TARIK DATA DARI SHEETS → localStorage ──
-async function pullFromSheets() {
-  if (!sheetsConnected) { showToast('Hubungkan dulu ke Google Sheets', 'error'); return; }
-  if (!confirm('Tarik data dari Google Sheets?\nData lokal yang ada akan DIGABUNG (artikel baru dari Sheets ditambahkan, yang sudah ada di lokal tetap).')) return;
-
-  setSyncState('syncing', 'Menarik data dari Sheets...');
-  document.getElementById('btnPullSheets').disabled = true;
-
-  try {
-    // Kirim request getAll ke Apps Script via fetch GET + JSONP
-    const data = await getFromSheets({ action: 'getAll' });
-    if (!data.ok) throw new Error(data.message || 'Gagal ambil data');
-
-    const incoming = data.articles || [];
-    if (!incoming.length) {
-      showToast('Tidak ada data di Google Sheets', 'error');
-      setSyncState('connected', 'Terhubung ✓');
-      document.getElementById('btnPullSheets').disabled = false;
-      return;
-    }
-
-    // Merge artikel
-    const localIds = new Set(articles.map(a => a.id));
-    let added = 0;
-    incoming.forEach(a => {
-      if (!localIds.has(a.id)) { articles.push(a); added++; }
-    });
-    saveArticles();
-
-    // Tarik personel juga
-    const pData = await getFromSheets({ action: 'getPersonnel' });
-    if (pData.ok && pData.personnel) {
-      // Merge personel — tambah nama yang belum ada
-      ['editor','reviewer','layout'].forEach(role => {
-        const incoming = pData.personnel[role] || [];
-        incoming.forEach(name => {
-          if (!personnel[role].includes(name)) personnel[role].push(name);
-        });
-      });
-      savePersonnel();
-      renderPersonnel();
-    }
-
-    renderAll();
-    setSyncState('connected', 'Tarik selesai ✓ — ' + added + ' artikel, personel diperbarui');
-    setLastSyncTime();
-    showToast('Berhasil tarik dari Sheets!', 'success');
-  } catch(e) {
-    setSyncState('error', 'Tarik gagal: ' + e.message);
-    showToast('Tarik gagal: ' + e.message, 'error');
-  }
-  document.getElementById('btnPullSheets').disabled = false;
-}
-
-// GET data dari Apps Script via JSONP
-function getFromSheets(params) {
-  return new Promise((resolve, reject) => {
-    const cbName = '_gsCb_' + Date.now();
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      delete window[cbName]; script.remove();
-      reject(new Error('Timeout — pastikan Apps Script sudah di-redeploy'));
-    }, 12000);
-    window[cbName] = function(data) {
-      clearTimeout(timer); delete window[cbName]; script.remove();
-      resolve(data);
-    };
-    script.onerror = () => {
-      clearTimeout(timer); delete window[cbName];
-      reject(new Error('Gagal load script'));
-    };
-    script.src = SHEETS_URL + '?' + new URLSearchParams({ ...params, callback: cbName });
-    document.head.appendChild(script);
-  });
-}
-
-
-function setLastSyncTime() {
-  const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('syncLastTime').textContent = 'Terakhir sync: ' + t;
-}
-
-// ── HOOK saveArticles ──
-const _origSaveArticles = saveArticles;
-saveArticles = function() {
-  _origSaveArticles();
-  if (autoSyncEnabled && articles.length > 0) {
-    const target = editingId ? articles.find(a => a.id === editingId) : articles[0];
-    if (target) autoSyncArticle(target);
-  }
-};
-
-document.getElementById('reviewModal').addEventListener('click', function(e) {
-  if (e.target === this) closeReviewModal();
-});
-
 
 // ============================================================
-//  STATISTIK & CHARTS
+//  CHARTS
 // ============================================================
-let chartInstances = {};
+function destroyChart(id) { if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];} }
 
 function renderCharts() {
-  renderStatCards();
-  renderChartByMonth();
-  renderChartByStatus();
-  renderChartByAfil();
-  renderChartByReviewer();
-}
-
-function destroyChart(id) {
-  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
-}
-
-// ── SUMMARY CARDS ──
-function renderStatCards() {
-  const total   = articles.length;
-  const review  = articles.filter(a => a.status === 'review').length;
-  const pub     = articles.filter(a => a.status === 'published').length;
-  const reject  = articles.filter(a => a.status === 'rejected').length;
-
-  // Unique affiliations
+  // stat cards
   const afilSet = new Set();
-  articles.forEach(a => (a.authors||[]).forEach(au => { if(au.affiliation) afilSet.add(au.affiliation); }));
-
+  articles.forEach(function(a){(a.authors||[]).forEach(function(au){if(au.affiliation)afilSet.add(au.affiliation);});});
   const cards = [
-    { val: total,        label: 'Total Artikel',   sub: 'semua status',         color: 'var(--blue-600)' },
-    { val: review,       label: 'Sedang Review',   sub: 'dalam proses',          color: 'var(--teal-600)' },
-    { val: pub,          label: 'Terbit',           sub: 'siap publish',          color: 'var(--green-600)' },
-    { val: afilSet.size, label: 'Afiliasi Unik',   sub: 'institusi berbeda',     color: 'var(--purple-600)' },
+    {val:articles.length,label:'Total Artikel',color:'var(--blue-600)'},
+    {val:articles.filter(function(a){return a.status==='review';}).length,label:'Review',color:'var(--teal-600)'},
+    {val:articles.filter(function(a){return a.status==='published';}).length,label:'Terbit',color:'var(--green-600)'},
+    {val:afilSet.size,label:'Afiliasi Unik',color:'var(--purple-600)'}
   ];
+  document.getElementById('statCards').innerHTML = cards.map(function(c){return '<div class="stat-card"><div class="stat-card-val" style="color:'+c.color+'">'+c.val+'</div><div class="stat-card-label">'+c.label+'</div></div>';}).join('');
 
-  document.getElementById('statCards').innerHTML = cards.map(c => `
-    <div class="stat-card">
-      <div class="stat-card-val" style="color:${c.color}">${c.val}</div>
-      <div class="stat-card-label">${c.label}</div>
-      <div class="stat-card-sub">${c.sub}</div>
-    </div>`).join('');
-}
-
-// ── CHART 1: Artikel per Bulan ──
-function renderChartByMonth() {
+  // Month chart
   destroyChart('month');
-
-  // Populate year filter
-  const years = [...new Set(articles.map(a => a.date ? a.date.slice(0,4) : null).filter(Boolean))].sort().reverse();
+  const years = [...new Set(articles.map(function(a){return a.date?a.date.slice(0,4):null;}).filter(Boolean))].sort().reverse();
   const sel = document.getElementById('chartYearFilter');
   const curYear = sel.value || (years[0] || new Date().getFullYear().toString());
-  sel.innerHTML = years.map(y => `<option value="${y}" ${y===curYear?'selected':''}>${y}</option>`).join('');
-
+  sel.innerHTML = years.map(function(y){return '<option value="'+y+'"'+(y===curYear?' selected':'')+'>'+y+'</option>';}).join('');
   const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  const counts = Array(12).fill(0);
-  articles.forEach(a => {
-    if (!a.date || !a.date.startsWith(curYear)) return;
-    const m = parseInt(a.date.split('-')[1]) - 1;
-    if (m >= 0 && m < 12) counts[m]++;
-  });
+  const mCounts = Array(12).fill(0);
+  articles.forEach(function(a){if(!a.date||!a.date.startsWith(curYear))return;const m=parseInt(a.date.split('-')[1])-1;if(m>=0&&m<12)mCounts[m]++;});
+  const mCtx = document.getElementById('chartByMonth');
+  if (mCtx) chartInstances['month'] = new Chart(mCtx.getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Artikel',data:mCounts,backgroundColor:'#378ADD',borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},x:{grid:{display:false}}}}});
 
-  const ctx = document.getElementById('chartByMonth').getContext('2d');
-  chartInstances['month'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [{
-        label: 'Artikel',
-        data: counts,
-        backgroundColor: '#378ADD',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#EEF0F3' } },
-        x: { grid: { display: false } }
-      }
-    }
-  });
-}
-
-// ── CHART 2: Status ──
-function renderChartByStatus() {
+  // Status donut
   destroyChart('status');
-  const statusMap = { submitted:'Diajukan', review:'Review', published:'Terbit', rejected:'Ditolak' };
-  const colors    = { submitted:'#378ADD', review:'#0F6E56', published:'#3B6D11', rejected:'#A32D2D' };
-  const counts = {};
-  articles.forEach(a => { counts[a.status] = (counts[a.status]||0) + 1; });
-  const labels = Object.keys(counts).map(k => statusMap[k]||k);
-  const data   = Object.values(counts);
-  const bgs    = Object.keys(counts).map(k => colors[k]||'#9EA4B0');
+  const sCounts = {};
+  articles.forEach(function(a){sCounts[a.status]=(sCounts[a.status]||0)+1;});
+  const sKeys = Object.keys(sCounts);
+  const sColors = {submitted:'#378ADD',review:'#0F6E56',published:'#3B6D11',rejected:'#A32D2D'};
+  const sLabels = {submitted:'Diajukan',review:'Review',published:'Terbit',rejected:'Ditolak'};
+  const sCtx = document.getElementById('chartByStatus');
+  if (sCtx && sKeys.length) chartInstances['status'] = new Chart(sCtx.getContext('2d'),{type:'doughnut',data:{labels:sKeys.map(function(k){return sLabels[k]||k;}),datasets:[{data:sKeys.map(function(k){return sCounts[k];}),backgroundColor:sKeys.map(function(k){return sColors[k]||'#9EA4B0';}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12},padding:16}}},cutout:'60%'}});
 
-  const ctx = document.getElementById('chartByStatus').getContext('2d');
-  chartInstances['status'] = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: bgs, borderWidth: 2, borderColor: '#fff' }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } }
-      },
-      cutout: '60%'
-    }
-  });
-}
-
-// ── CHART 3: Afiliasi ──
-function renderChartByAfil() {
+  // Afiliasi
   destroyChart('afil');
-  const top = parseInt(document.getElementById('chartAfilTop').value) || 10;
-  const counts = {};
-  articles.forEach(a => {
-    (a.authors||[]).forEach(au => {
-      const af = (au.affiliation||'').trim();
-      if (af) counts[af] = (counts[af]||0) + 1;
-    });
-  });
-  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, top);
-  if (!sorted.length) return;
+  const top = parseInt((document.getElementById('chartAfilTop')||{value:10}).value||10);
+  const aCounts = {};
+  articles.forEach(function(a){(a.authors||[]).forEach(function(au){const af=(au.affiliation||'').trim();if(af)aCounts[af]=(aCounts[af]||0)+1;});});
+  const aSorted = Object.entries(aCounts).sort(function(a,b){return b[1]-a[1];}).slice(0,top);
+  const aCtx = document.getElementById('chartByAfil');
+  if (aCtx && aSorted.length) chartInstances['afil'] = new Chart(aCtx.getContext('2d'),{type:'bar',data:{labels:aSorted.map(function(e){return e[0].length>30?e[0].slice(0,28)+'…':e[0];}),datasets:[{label:'Artikel',data:aSorted.map(function(e){return e[1];}),backgroundColor:'#534AB7',borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
 
-  const labels = sorted.map(e => e[0].length > 30 ? e[0].slice(0,28)+'…' : e[0]);
-  const data   = sorted.map(e => e[1]);
-  const ctx = document.getElementById('chartByAfil').getContext('2d');
-  chartInstances['afil'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Artikel',
-        data,
-        backgroundColor: '#534AB7',
-        borderRadius: 5,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#EEF0F3' } },
-        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
-}
-
-// ── CHART 4: Reviewer ──
-function renderChartByReviewer() {
+  // Reviewer
   destroyChart('reviewer');
-  const counts = {};
-  articles.forEach(a => {
-    if (a.reviewer) counts[a.reviewer] = (counts[a.reviewer]||0) + 1;
-  });
-  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-  if (!sorted.length) {
-    // Empty state
-    const ctx = document.getElementById('chartByReviewer').getContext('2d');
-    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle = '#9EA4B0';
-    ctx.font = '13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Belum ada data reviewer', ctx.canvas.width/2, 80);
-    return;
+  const rCounts = {};
+  articles.forEach(function(a){if(a.reviewer)rCounts[a.reviewer]=(rCounts[a.reviewer]||0)+1;});
+  const rSorted = Object.entries(rCounts).sort(function(a,b){return b[1]-a[1];});
+  const rCtx = document.getElementById('chartByReviewer');
+  if (rCtx && rSorted.length) {
+    const palette = ['#0F6E56','#185FA5','#534AB7','#854F0B','#3B6D11','#A32D2D'];
+    chartInstances['reviewer'] = new Chart(rCtx.getContext('2d'),{type:'bar',data:{labels:rSorted.map(function(e){return e[0];}),datasets:[{label:'Artikel',data:rSorted.map(function(e){return e[1];}),backgroundColor:rSorted.map(function(_,i){return palette[i%palette.length];}),borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
   }
-
-  // Color gradient per bar
-  const palette = ['#0F6E56','#185FA5','#534AB7','#854F0B','#3B6D11','#A32D2D','#378ADD','#0C447C'];
-  const bgs = sorted.map((_,i) => palette[i % palette.length]);
-
-  const ctx = document.getElementById('chartByReviewer').getContext('2d');
-  chartInstances['reviewer'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: sorted.map(e => e[0]),
-      datasets: [{
-        label: 'Artikel ditangani',
-        data: sorted.map(e => e[1]),
-        backgroundColor: bgs,
-        borderRadius: 5,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#EEF0F3' } },
-        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
 }
 
+// ============================================================
+//  IMPORT EXCEL
+// ============================================================
+const COL_MAP = {
+  title:['judul artikel','judul','title'],
+  author:['nama penulis','penulis','author','nama'],
+  affiliation:['afiliasi','affiliation','institusi'],
+  date:['tanggal submit','tanggal','date','tgl submit'],
+  editor:['editor'],reviewer:['reviewer'],
+  layoutWorker:['layouter','layout worker','layout'],
+  issue:['terbitan','issue','volume'],
+  doi:['doi','link doi'],
+  email:['email','email penulis']
+};
+
+function findCol(headers, keys) {
+  for (var i=0;i<keys.length;i++){var idx=headers.findIndex(function(h){return h.toLowerCase().trim()===keys[i];});if(idx!==-1)return idx;}
+  return -1;
+}
+
+async function importFromExcel(input) {
+  const file = input.files[0]; if(!file)return;
+  input.value='';
+  const buf = await file.arrayBuffer();
+  let rows = [];
+  try {
+    const wb = XLSX.read(buf,{type:'array'});
+    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+  } catch(e){showToast('Gagal baca file: '+e.message,'error');return;}
+  if(!rows.length){showToast('File kosong','error');return;}
+  const headers = rows[0].map(function(h){return String(h).toLowerCase().trim();});
+  const dataRows = rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
+  if(!dataRows.length){showToast('Tidak ada data','error');return;}
+  const colIdx = {};
+  Object.entries(COL_MAP).forEach(function(e){colIdx[e[0]]=findCol(headers,e[1]);});
+  const warn = document.getElementById('importWarning');
+  if(colIdx.title===-1){warn.style.display='block';warn.textContent='⚠️ Kolom "Judul Artikel" tidak ditemukan.';}
+  else warn.style.display='none';
+  importBuffer = dataRows.map(function(row){
+    const get = function(f){return colIdx[f]!==-1?String(row[colIdx[f]]||'').trim():'';};
+    const names = get('author').split(';').map(function(s){return s.trim();}).filter(Boolean);
+    const afils = get('affiliation').split(';').map(function(s){return s.trim();});
+    const emails= get('email').split(';').map(function(s){return s.trim();});
+    const authors = names.length ? names.map(function(n,i){return{name:n,affiliation:afils[i]||'',email:emails[i]||''};}) : [{name:'',affiliation:get('affiliation'),email:get('email')}];
+    let date = get('date');
+    if(date&&!isNaN(date)&&Number(date)>1000){const d=XLSX.SSF.parse_date_code(Number(date));if(d)date=d.y+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0');}
+    else if(date){const dobj=new Date(date);if(!isNaN(dobj))date=dobj.getFullYear()+'-'+String(dobj.getMonth()+1).padStart(2,'0')+'-'+String(dobj.getDate()).padStart(2,'0');}
+    return{id:Date.now().toString()+'_'+Math.random().toString(36).slice(2),title:get('title'),authors,date,editor:get('editor'),reviewer:get('reviewer'),layoutWorker:get('layoutWorker'),issue:get('issue'),doi:get('doi'),status:(get('editor')||get('reviewer'))?'review':'submitted',checklist:{turnitin:false,eyd:false,layout:false}};
+  }).filter(function(a){return a.title;});
+  if(!importBuffer.length){showToast('Tidak ada data valid','error');return;}
+  document.getElementById('importRowCount').textContent = importBuffer.length+' baris akan diimport';
+  const labels = ['Judul','Penulis','Tanggal','Editor','Reviewer','Layouter','Terbitan'];
+  document.getElementById('importPreview').innerHTML = '<table><thead><tr>'+labels.map(function(l){return '<th>'+l+'</th>';}).join('')+'</tr></thead><tbody>'+importBuffer.map(function(a){return '<tr><td title="'+escH(a.title)+'">'+escH(a.title)+'</td><td>'+escH((a.authors||[]).map(function(au){return au.name;}).join('; '))+'</td><td>'+escH(a.date)+'</td><td>'+escH(a.editor)+'</td><td>'+escH(a.reviewer)+'</td><td>'+escH(a.layoutWorker)+'</td><td>'+escH(a.issue)+'</td></tr>';}).join('')+'</tbody></table>';
+  document.getElementById('importModal').classList.add('open');
+}
+
+async function confirmImport() {
+  if(!importBuffer.length)return;
+  const btn = document.querySelector('#importModal .btn-primary');
+  btn.disabled=true; btn.textContent='Mengimport...';
+  const toInsert = importBuffer.map(articleToDb);
+  const {error} = await sb.from('articles').upsert(toInsert);
+  if(error){showToast('Import gagal: '+error.message,'error');btn.disabled=false;btn.textContent='Import Semua';return;}
+  importBuffer.forEach(function(a){articles.unshift(a);});
+  renderAll();
+  closeImportModal();
+  showToast(importBuffer.length+' artikel berhasil diimport!','success');
+  importBuffer=[];
+  btn.disabled=false; btn.textContent='Import Semua';
+}
+
+function closeImportModal(){document.getElementById('importModal').classList.remove('open');importBuffer=[];}
+
+function downloadTemplate() {
+  const headers = ['Judul Artikel','Nama Penulis','Afiliasi','Email','Tanggal Submit','Editor','Reviewer','Layouter','Terbitan','DOI'];
+  const ex1 = ['Contoh Judul Artikel Pertama','Ahmad Fauzi; Budi Santoso','Universitas A; Institut B','ahmad@univ.ac.id; budi@inst.ac.id','2026-05-01','Dr. Anwar','Prof. Siti','Farel','Vol. 4 No. 1 2026','https://doi.org/10.xxxx/contoh'];
+  const ex2 = ['Contoh Artikel Kedua','Siti Rahmah','UIN Sunan Ampel','siti@uinsa.ac.id','2026-05-03','','','','',''];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers,ex1,ex2]);
+  ws['!cols']=[{wch:35},{wch:25},{wch:25},{wch:25},{wch:15},{wch:15},{wch:15},{wch:12},{wch:20},{wch:30}];
+  XLSX.utils.book_append_sheet(wb,ws,'Template');
+  XLSX.writeFile(wb,'template-import-al-usariyah.xlsx');
+  showToast('Template diunduh!','success');
+}
+
+// ============================================================
+//  UTILS
+// ============================================================
+function setDbState(state, label) {
+  const dot = document.getElementById('dbDot');
+  const lbl = document.getElementById('dbLabel');
+  if (dot) { dot.className='db-dot'; if(state!=='ok') dot.classList.add(state); else dot.classList.add('ok'); }
+  if (lbl) lbl.textContent = label;
+}
+
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function escH(str){if(!str)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function showToast(msg,type){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');t.className='toast '+(type||'');
+  t.textContent=msg; c.appendChild(t);
+  setTimeout(function(){t.remove();},3000);
+}
 </script>
 </body>
 </html>
