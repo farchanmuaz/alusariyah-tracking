@@ -169,7 +169,15 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 .modal-section-label:first-child{margin-top:0;}
 .required-star{color:var(--red-600);}
 
+.personnel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
 .personnel-list{display:flex;flex-direction:column;gap:6px;}
+.personnel-list-wrap{overflow:hidden;transition:max-height .25s ease;}
+.personnel-list-scroll{max-height:280px;overflow-y:auto;padding:10px 12px 6px;}
+.personnel-search{padding:5px 9px;font-size:12px;border:1px solid #e5e7eb;border-radius:7px;outline:none;width:150px;font-family:'Inter',sans-serif;color:#1f2937;}
+.personnel-search:focus{border-color:var(--green-600);box-shadow:0 0 0 2px var(--green-50);}
+.personnel-toggle{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;color:#9ca3af;transition:transform .2s,background .15s;flex-shrink:0;}
+.personnel-toggle:hover{background:#f3f4f6;color:#374151;}
+.personnel-toggle.collapsed{transform:rotate(-90deg);}
 .personnel-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;font-size:13px;}
 .personnel-name-input{font-weight:500;border:none;background:none;outline:none;width:100%;font-size:13px;font-family:'Inter',sans-serif;}
 .personnel-name-input[readonly]{cursor:pointer;}
@@ -248,6 +256,10 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 .sb-toggle{margin-left:auto;width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;color:#9ca3af;flex-shrink:0;}
 .sb-toggle:hover{background:#f3f4f6;color:#374151;}
 .collapsed .sb-toggle{margin-left:0;}
+.collapsed .sb-logo{display:none;}
+.collapsed .sb-head{padding:14px 10px;justify-content:center;}
+.tb-sidebar-toggle{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #e5e7eb;border-radius:7px;cursor:pointer;color:#6b7280;flex-shrink:0;}
+.tb-sidebar-toggle:hover{background:#f3f4f6;color:#111827;}
 
 .sb-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
 .sb-section-label{font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;padding:10px 12px 6px;}
@@ -357,6 +369,16 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
   .dash-grid{grid-template-columns:repeat(3,1fr)!important;}
   .dash-row{grid-template-columns:1fr;}
   .hero-title{font-size:20px;}
+  .personnel-grid{grid-template-columns:1fr;}
+  .personnel-search{width:120px;}
+}
+@media(max-width:600px){
+  .personnel-grid{grid-template-columns:1fr;}
+  .personnel-search{width:100%;max-width:160px;}
+  .panel-header{flex-wrap:wrap;gap:8px;}
+  .personnel-item{flex-wrap:wrap;gap:6px;}
+  .personnel-actions{flex-shrink:0;}
+  .personnel-name-input{min-width:0;width:auto;flex:1;}
 }
 
 /* ── ARTICLE FORM HORIZONTAL ── */
@@ -405,6 +427,137 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 .card-prog-label{font-size:11px;color:var(--gray-400);}
 .article-title-link{cursor:pointer;transition:color .15s;}
 .article-title-link:hover{color:var(--dgreen-700);}
+
+/* ── DARK MODE ── */
+body.dark{
+  background:#111827;color:#e5e7eb;
+  --gray-50:#1e2130;--gray-100:#252a3a;--gray-200:#2d3148;--gray-300:#374151;--gray-400:#6b7280;--gray-600:#9ca3af;--gray-800:#d1d5db;--gray-900:#f3f4f6;
+  --blue-50:#1a2535;--blue-100:#1e3a5f;--red-50:#2d1515;--red-200:#7f1d1d;--amber-50:#2d1f05;--teal-50:#0d2520;--purple-50:#1a1835;--green-50:#1a2a12;
+}
+body.dark .sidebar{background:#1a1d27;border-right-color:#2d3148;}
+body.dark .sb-head{border-bottom-color:#2d3148;}
+body.dark .sb-brand-name{color:#f3f4f6;}
+body.dark .sb-brand-sub{color:#6b7280;}
+body.dark .sb-section-label{color:#4b5563;}
+body.dark .sb-item{color:#9ca3af;}
+body.dark .sb-item:hover{background:#252a3a;color:#f3f4f6;}
+body.dark .sb-item.active{background:#1a3a12;color:#86efac;}
+body.dark .sb-item.active::before{background:#3d7520;}
+body.dark .sb-item-badge{background:#3d7520;}
+body.dark .sb-foot{border-top-color:#2d3148;}
+body.dark .sb-user-email{color:#f3f4f6;}
+body.dark .sb-user-role{color:#6b7280;}
+body.dark .sb-logout{border-color:#374151;color:#9ca3af;}
+body.dark .sb-logout:hover{background:#2d1515;border-color:#ef4444;color:#ef4444;}
+body.dark .sb-toggle,body.dark .tb-sidebar-toggle{border-color:#374151;color:#9ca3af;}
+body.dark .sb-toggle:hover,body.dark .tb-sidebar-toggle:hover{background:#252a3a;color:#f3f4f6;}
+body.dark .topbar{background:#1a1d27;border-bottom-color:#2d3148;}
+body.dark .crumb-home{color:#6b7280;}
+body.dark .crumb-sep{color:#374151;}
+body.dark .crumb-current{color:#f3f4f6;}
+body.dark .tb-pill{background:#1e2130;border-color:#2d3148;color:#9ca3af;}
+body.dark .tb-pill strong{color:#f3f4f6;}
+body.dark .page-container{background:#111827;}
+body.dark .panel{background:#1e2130;border-color:#2d3148;}
+body.dark .panel-header{border-bottom-color:#2d3148;}
+body.dark .panel-title{color:#f3f4f6;}
+body.dark .panel-subtitle{color:#6b7280;}
+body.dark label.field-label{color:#9ca3af;}
+body.dark input[type="text"],body.dark input[type="email"],body.dark input[type="url"],body.dark input[type="date"],body.dark select{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark input:focus,body.dark select:focus{border-color:#3d7520;box-shadow:0 0 0 3px rgba(61,117,32,.2);}
+body.dark .article-card{background:#1e2130;border-color:#2d3148;}
+body.dark .article-card:hover{border-color:#3d6b25;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+body.dark .article-title{color:#f3f4f6;}
+body.dark .article-card-body{border-top-color:#2d3148;}
+body.dark .card-progress-row{border-top-color:#2d3148;}
+body.dark .card-prog-label{color:#6b7280;}
+body.dark .meta-item{color:#9ca3af;}
+body.dark .review-section{background:#1a2535;}
+body.dark .ri-label{color:#6b7280;}
+body.dark .ri-value{color:#e5e7eb;}
+body.dark .filter-bar{background:#1e2130;border-bottom-color:#2d3148;}
+body.dark .filter-btn{background:#252a3a;border-color:#374151;color:#9ca3af;}
+body.dark .filter-btn:hover{border-color:#3d7520;color:#86efac;}
+body.dark .filter-btn.active{background:#264f12;border-color:#264f12;color:#fff;}
+body.dark .adv-filters,body.dark .bulk-actions{background:#1e2130;border-bottom-color:#2d3148;}
+body.dark .dash-card{background:#1e2130;border-color:#2d3148;}
+body.dark .dash-card .dc-label{color:#6b7280;}
+body.dark .dash-card .dc-val{color:#f3f4f6;}
+body.dark .dc-blue .dc-val{color:#60a5fa;}
+body.dark .dc-teal .dc-val{color:#34d399;}
+body.dark .dc-green .dc-val{color:#86efac;}
+body.dark .dc-red .dc-val{color:#f87171;}
+body.dark .quick-btn{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .quick-btn:hover{border-color:#3d7520;background:#1a2a12;}
+body.dark .dash-recent .recent-item{border-bottom-color:#2d3148;}
+body.dark .recent-title{color:#e5e7eb;}
+body.dark .modal-overlay{background:rgba(0,0,0,.7);}
+body.dark .modal{background:#1e2130;}
+body.dark .modal-header{border-bottom-color:#2d3148;background:#1e2130;}
+body.dark .modal-title{color:#f3f4f6;}
+body.dark .modal-footer{border-top-color:#2d3148;background:#1e2130;}
+body.dark .modal-close{background:#1e2130;border-color:#374151;color:#9ca3af;}
+body.dark .modal-section-label{border-bottom-color:#2d3148;color:#6b7280;}
+body.dark .personnel-item{background:#252a3a;border-color:#374151;}
+body.dark .personnel-name-input{color:#e5e7eb;background:transparent;}
+body.dark .personnel-role{color:#6b7280;}
+body.dark .personnel-search{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .add-personnel-row input{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .authors-box{border-color:#374151;}
+body.dark .author-row{border-bottom-color:#2d3148;}
+body.dark .author-email-row{background:#252a3a;border-bottom-color:#2d3148;}
+body.dark .author-remove{background:#252a3a;border-color:#374151;color:#9ca3af;}
+body.dark .fund-card{background:#252a3a;border-color:#374151;}
+body.dark .fund-card-label{color:#6b7280;}
+body.dark .issue-group-header{background:#252a3a;border-color:#374151;}
+body.dark .funding-table-wrap{background:#1e2130;border-color:#374151;}
+body.dark .funding-table th{background:#252a3a;color:#9ca3af;border-bottom-color:#374151;}
+body.dark .funding-table td{color:#e5e7eb;border-bottom-color:#2d3148;}
+body.dark .funding-table tr:hover td{background:#252a3a;}
+body.dark .stat-card{background:#1e2130;border-color:#2d3148;}
+body.dark .login-box{background:#1e2130;box-shadow:0 24px 64px rgba(0,0,0,.6);}
+body.dark .login-form input{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .empty-state{color:#6b7280;}
+body.dark .import-preview{border-color:#374151;}
+body.dark .import-preview td{border-bottom-color:#2d3148;}
+body.dark .article-form-grid input,body.dark .article-form-grid select{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .btn-delete{background:#252a3a;border-color:#374151;color:#9ca3af;}
+body.dark .btn-delete:hover{background:#2d1515;border-color:#ef4444;color:#ef4444;}
+body.dark .dm-btn{border-color:#374151;color:#9ca3af;}
+body.dark .dm-btn:hover{background:#252a3a;color:#f3f4f6;}
+/* catch-all: hardcoded dark text on dark bg */
+body.dark .modal-body{color:#e5e7eb;}
+body.dark .modal-body label,body.dark .modal-body p,body.dark .modal-body span{color:inherit;}
+body.dark .stat-card-val{color:#f3f4f6;}
+body.dark .stat-card-label{color:#9ca3af;}
+body.dark .stat-card-sub{color:#9ca3af;}
+body.dark .bulk-actions label{color:#9ca3af;}
+body.dark .adv-filters select,body.dark .adv-filters input{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .check-item{border-color:#374151;color:#9ca3af;}
+body.dark .check-item.checked{background:#1a3a12;border-color:#3d7520;color:#86efac;}
+body.dark .form-mode-indicator{background:#1a2535;color:#60a5fa;}
+body.dark .btn-save{background:#1a2535;border-color:#3b82f6;color:#93c5fd;}
+body.dark .btn-review{background:#0d2520;border-color:#0f6e56;color:#6ee7b7;}
+body.dark .btn-publish{background:#1a3a12;border-color:#3d7520;color:#86efac;}
+body.dark .btn-reject{background:#2d1515;border-color:#a32d2d;color:#fca5a5;}
+body.dark .btn-edit{background:#2d1f05;border-color:#854f0b;color:#fcd34d;}
+body.dark .btn{color:#d1d5db;}
+body.dark .issue-group-title{color:#93c5fd;}
+body.dark .role-tag{opacity:.9;}
+body.dark .user-badge{background:#1e2130;color:#9ca3af;}
+body.dark .hero-sub{color:#9cc0ae;}
+body.dark .login-form label{color:#9ca3af;}
+body.dark .login-title{color:#86efac;}
+body.dark .login-sub{color:#6b7280;}
+body.dark .opt{color:#6b7280;}
+body.dark .dash-card .dc-sub{color:#6b7280;}
+body.dark .recent-date{color:#6b7280;}
+body.dark .tb-db.ok{background:#0d2a10;border-color:#1a4d1a;color:#86efac;}
+body.dark .tb-db.err{background:#2d1515;border-color:#7f1d1d;color:#fca5a5;}
+body.dark .tb-db.loading{background:#2d1f05;border-color:#7c4d0a;color:#fcd34d;}
+body.dark .import-warning{background:#2d1f05;border-color:#7c4d0a;color:#fcd34d;}
+body.dark .import-preview th{background:#1e3a5f;}
+body.dark .import-preview td{background:#1e2130;color:#e5e7eb;}
 </style>
 </head>
 <body>
@@ -494,6 +647,10 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
         <div class="sb-user-role">Admin</div>
       </div>
     </div>
+    <button class="sb-logout dm-btn" onclick="toggleDarkMode()" id="dmToggle" style="margin-bottom:6px;">
+      <svg id="dmIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="dmLabel">Mode Gelap</span>
+    </button>
     <button class="sb-logout" onclick="doLogout()">
       <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
       <span>Keluar</span>
@@ -506,6 +663,7 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 
 <!-- TOPBAR -->
 <header class="topbar">
+  <button class="tb-sidebar-toggle" onclick="toggleSidebar()" title="Buka/Tutup sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="crumbs">
     <span class="crumb-home">Al Usariyah</span>
     <span class="crumb-sep">/</span>
@@ -691,9 +849,14 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
     </div>
     <div class="bulk-actions" id="bulkActionsBar" style="display:none;">
       <label><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)"> Pilih semua</label>
-      <button class="btn btn-delete btn-xs" onclick="deleteSelectedArticles()">Hapus Terpilih</button>
-      <button class="btn btn-delete btn-xs" onclick="clearSelections()">Reset pilihan</button>
       <span id="bulkSelectionCount" style="font-size:12px;color:var(--gray-600);"></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
+        <button class="btn btn-review btn-xs" onclick="bulkSetStatus('review')">Set Review</button>
+        <button class="btn btn-publish btn-xs" onclick="bulkSetStatus('published')">Terbitkan Semua</button>
+        <button class="btn btn-reject btn-xs" onclick="bulkSetStatus('rejected')">Tolak Semua</button>
+        <button class="btn btn-delete btn-xs" onclick="deleteSelectedArticles()">Hapus Terpilih</button>
+        <button class="btn btn-xs" style="background:#f3f4f6;border-color:#e5e7eb;color:#6b7280;" onclick="clearSelections()">Batal Pilih</button>
+      </div>
     </div>
     <div id="articlesList" class="articles-list"><div class="loading-row">Memuat artikel...</div></div>
   </div>
@@ -720,26 +883,50 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 <!-- PAGE: PERSONNEL -->
 <div class="page" id="page-personnel">
 <div class="app-body-full">
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+  <div class="personnel-grid">
     <div class="panel">
-      <div class="panel-header"><div><div class="panel-title">Editor</div><div class="panel-subtitle" id="countEditors">0 terdaftar</div></div></div>
-      <div class="panel-body">
-        <div class="personnel-list" id="listEditors"></div>
-        <div class="add-personnel-row"><input type="text" id="inputEditor" placeholder="Nama editor baru..." /><button class="btn-add-mini" onclick="addPersonnel('editor')">+ Tambah</button></div>
+      <div class="panel-header">
+        <div><div class="panel-title">Editor</div><div class="panel-subtitle" id="countEditors">0 terdaftar</div></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input class="personnel-search" id="searchEditor" placeholder="Cari editor..." oninput="filterPersonnel('editor',this.value)" />
+          <button class="personnel-toggle" id="toggleEditor" onclick="togglePersonnelPanel('editor')" title="Tampilkan/sembunyikan"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="personnel-list-wrap" id="wrapEditors">
+        <div class="personnel-list-scroll"><div class="personnel-list" id="listEditors"></div></div>
+        <div class="panel-body" style="padding-top:6px;border-top:1px solid #f3f4f6;">
+          <div class="add-personnel-row"><input type="text" id="inputEditor" placeholder="Nama editor baru..." /><button class="btn-add-mini" onclick="addPersonnel('editor')">+ Tambah</button></div>
+        </div>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-header"><div><div class="panel-title">Reviewer</div><div class="panel-subtitle" id="countReviewers">0 terdaftar</div></div></div>
-      <div class="panel-body">
-        <div class="personnel-list" id="listReviewers"></div>
-        <div class="add-personnel-row"><input type="text" id="inputReviewer" placeholder="Nama reviewer baru..." /><button class="btn-add-mini" onclick="addPersonnel('reviewer')">+ Tambah</button></div>
+      <div class="panel-header">
+        <div><div class="panel-title">Reviewer</div><div class="panel-subtitle" id="countReviewers">0 terdaftar</div></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input class="personnel-search" id="searchReviewer" placeholder="Cari reviewer..." oninput="filterPersonnel('reviewer',this.value)" />
+          <button class="personnel-toggle" id="toggleReviewer" onclick="togglePersonnelPanel('reviewer')" title="Tampilkan/sembunyikan"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="personnel-list-wrap" id="wrapReviewers">
+        <div class="personnel-list-scroll"><div class="personnel-list" id="listReviewers"></div></div>
+        <div class="panel-body" style="padding-top:6px;border-top:1px solid #f3f4f6;">
+          <div class="add-personnel-row"><input type="text" id="inputReviewer" placeholder="Nama reviewer baru..." /><button class="btn-add-mini" onclick="addPersonnel('reviewer')">+ Tambah</button></div>
+        </div>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-header"><div><div class="panel-title">Layout Worker</div><div class="panel-subtitle" id="countLayouts">0 terdaftar</div></div></div>
-      <div class="panel-body">
-        <div class="personnel-list" id="listLayouts"></div>
-        <div class="add-personnel-row"><input type="text" id="inputLayout" placeholder="Nama layout worker baru..." /><button class="btn-add-mini" onclick="addPersonnel('layout')">+ Tambah</button></div>
+      <div class="panel-header">
+        <div><div class="panel-title">Layout Worker</div><div class="panel-subtitle" id="countLayouts">0 terdaftar</div></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input class="personnel-search" id="searchLayout" placeholder="Cari layout worker..." oninput="filterPersonnel('layout',this.value)" />
+          <button class="personnel-toggle" id="toggleLayout" onclick="togglePersonnelPanel('layout')" title="Tampilkan/sembunyikan"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="personnel-list-wrap" id="wrapLayouts">
+        <div class="personnel-list-scroll"><div class="personnel-list" id="listLayouts"></div></div>
+        <div class="panel-body" style="padding-top:6px;border-top:1px solid #f3f4f6;">
+          <div class="add-personnel-row"><input type="text" id="inputLayout" placeholder="Nama layout worker baru..." /><button class="btn-add-mini" onclick="addPersonnel('layout')">+ Tambah</button></div>
+        </div>
       </div>
     </div>
   </div>
@@ -927,6 +1114,29 @@ function showApp() {
   loadAll();
 }
 
+function initDarkMode() {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+  }
+  updateDarkModeIcon();
+}
+
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode', isDark);
+  updateDarkModeIcon();
+}
+
+function updateDarkModeIcon() {
+  const isDark = document.body.classList.contains('dark');
+  const icon = document.getElementById('dmIcon');
+  const label = document.getElementById('dmLabel');
+  if (icon) icon.innerHTML = isDark
+    ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+    : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  if (label) label.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+}
+
 function toggleSidebar() {
   const grid = document.getElementById('appShellGrid');
   grid.classList.toggle('collapsed');
@@ -949,6 +1159,7 @@ function startHeroClock() {
 
 // Check existing session on load
 window.addEventListener('DOMContentLoaded', async function() {
+  initDarkMode();
   const { data } = await sb.auth.getSession();
   if (data.session) {
     currentUser = data.session.user;
@@ -1227,13 +1438,32 @@ async function removePersonnel(role, name) {
 
 function renderPersonnel() {
   ['editor','reviewer','layout'].forEach(function(role) {
-    const listEl  = document.getElementById('list' + cap(role) + 's');
-    const countEl = document.getElementById('count' + cap(role) + 's');
-    countEl.textContent = personnel[role].length + ' terdaftar';
-    listEl.innerHTML = personnel[role].length
-      ? personnel[role].map(function(name){return '<div class="personnel-item"><div><input type="text" class="personnel-name-input" value="'+escH(name)+'" readonly data-original-name="'+escH(name)+'" /><div class="personnel-role">'+cap(role)+'</div></div><div class="personnel-actions"><button class="btn btn-edit btn-xs" onclick="togglePersonnelEdit(this)">Edit</button><button class="btn btn-delete btn-xs" onclick="removePersonnel(\''+role+'\',this.closest(\'.personnel-item\').querySelector(\'.personnel-name-input\').value)">Hapus</button></div></div>';}).join('')
-      : '<div style="font-size:12px;color:var(--gray-400);padding:6px 0;">Belum ada personel</div>';
+    const q = (document.getElementById('search' + cap(role)) || {}).value || '';
+    renderPersonnelRole(role, q);
   });
+}
+
+function renderPersonnelRole(role, q) {
+  const listEl  = document.getElementById('list' + cap(role) + 's');
+  const countEl = document.getElementById('count' + cap(role) + 's');
+  const all = personnel[role];
+  const filtered = q ? all.filter(function(n){return n.toLowerCase().includes(q.toLowerCase());}) : all;
+  countEl.textContent = all.length + ' terdaftar' + (q && filtered.length !== all.length ? ' · ' + filtered.length + ' cocok' : '');
+  listEl.innerHTML = filtered.length
+    ? filtered.map(function(name){return '<div class="personnel-item"><div><input type="text" class="personnel-name-input" value="'+escH(name)+'" readonly data-original-name="'+escH(name)+'" /><div class="personnel-role">'+cap(role)+'</div></div><div class="personnel-actions"><button class="btn btn-edit btn-xs" onclick="togglePersonnelEdit(this)">Edit</button><button class="btn btn-delete btn-xs" onclick="removePersonnel(\''+role+'\',this.closest(\'.personnel-item\').querySelector(\'.personnel-name-input\').value)">Hapus</button></div></div>';}).join('')
+    : '<div style="font-size:12px;color:var(--gray-400);padding:6px 0;">'+(q?'Tidak ditemukan':'Belum ada personel')+'</div>';
+}
+
+function filterPersonnel(role, q) {
+  renderPersonnelRole(role, q);
+}
+
+function togglePersonnelPanel(role) {
+  const wrap = document.getElementById('wrap' + cap(role) + 's');
+  const btn  = document.getElementById('toggle' + cap(role));
+  const hidden = wrap.style.display === 'none';
+  wrap.style.display = hidden ? '' : 'none';
+  if (btn) btn.classList.toggle('collapsed', !hidden);
 }
 
 function populateReviewDropdowns() {
@@ -1581,6 +1811,31 @@ function clearSelections() {
   applyFilters();
 }
 
+async function unpublishArticle(id) {
+  if (!window.confirm('Batalkan penerbitan artikel ini? Status akan kembali ke Review.')) return;
+  const { error } = await sb.from('articles').update({ status: 'review' }).eq('id', id);
+  if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
+  const a = articles.find(function(x){return x.id===id;});
+  if (a) a.status = 'review';
+  applyFilters();
+  renderDashboard();
+  showToast('Penerbitan dibatalkan, status kembali ke Review', 'success');
+}
+
+async function bulkSetStatus(status) {
+  if (!selectedArticleIds.size) { showToast('Tidak ada artikel terpilih', 'error'); return; }
+  const labels = { review: 'Review', published: 'Terbit', rejected: 'Ditolak' };
+  if (!window.confirm('Ubah ' + selectedArticleIds.size + ' artikel ke status ' + (labels[status]||status) + '?')) return;
+  const ids = Array.from(selectedArticleIds);
+  const { error } = await sb.from('articles').update({ status: status }).in('id', ids);
+  if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
+  ids.forEach(function(id){ const a = articles.find(function(x){return x.id===id;}); if(a) a.status = status; });
+  selectedArticleIds.clear();
+  applyFilters();
+  renderDashboard();
+  showToast(ids.length + ' artikel → ' + (labels[status]||status), 'success');
+}
+
 function renderCard(a) {
   const badges = {submitted:'<span class="status-badge badge-submitted">Diajukan</span>',review:'<span class="status-badge badge-review">Review</span>',rejected:'<span class="status-badge badge-rejected">Ditolak</span>',published:'<span class="status-badge badge-published">Terbit</span>'};
   const dateFmt = a.date ? new Date(a.date+'T12:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '-';
@@ -1599,7 +1854,7 @@ function renderCard(a) {
     : a.status==='review'
     ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit Review</button>'+(allChecked?'<button class="btn btn-publish btn-sm" onclick="publishArticle(\''+a.id+'\')">Siap Publish</button>':'')
     : a.status==='published'
-    ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit</button>'
+    ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit</button><button class="btn btn-reject btn-sm" onclick="unpublishArticle(\''+a.id+'\')">Batal Terbit</button>'
     : a.status==='rejected'
     ? '<button class="btn btn-save btn-sm" onclick="restoreArticle(\''+a.id+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Pulihkan</button>'
     : '';
