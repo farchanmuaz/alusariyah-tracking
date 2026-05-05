@@ -4,40 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Al Usariyah — Journal Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-200:#85B7EB;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;--blue-900:#042C53;
-  --gray-50:#F7F8FA;--gray-100:#EEF0F3;--gray-200:#D8DBE2;--gray-400:#9EA4B0;--gray-600:#5C6270;--gray-800:#2E3340;--gray-900:#1A1E28;
-  --green-50:#EAF3DE;--green-100:#C0DD97;--green-600:#3B6D11;--green-800:#27500A;
+  --gray-50:#F7F8FA;--gray-100:#EEF0F3;--gray-200:#D8DBE2;--gray-300:#BFC4CE;--gray-400:#9EA4B0;--gray-600:#5C6270;--gray-800:#2E3340;--gray-900:#1A1E28;
+  --green-50:#eef6e2;--green-100:#c5e295;--green-600:#3d7520;--green-800:#264f12;
   --red-50:#FCEBEB;--red-200:#F7C1C1;--red-600:#A32D2D;
   --amber-50:#FAEEDA;--amber-600:#854F0B;--amber-800:#633806;
   --teal-50:#E1F5EE;--teal-600:#0F6E56;--teal-800:#085041;
   --purple-50:#EEEDFE;--purple-600:#534AB7;--purple-800:#3C3489;
+  --dgreen-900:#0d1f04;--dgreen-800:#172d08;--dgreen-700:#264f12;--dgreen-600:#3d7520;--dgreen-300:#7cbd3e;
+  --sb-w:248px;--sb-w-collapsed:64px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Source Sans 3',sans-serif;font-size:15px;background:var(--gray-50);color:var(--gray-800);min-height:100vh;}
+body{font-family:'Inter',sans-serif;font-size:14px;background:#f3f4f6;color:#1f2937;min-height:100vh;}
 
 /* ── LOGIN SCREEN ── */
-.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue-900) 0%,var(--blue-700,#1e6fb5) 50%,var(--blue-800) 100%);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s;}
+.login-screen{position:fixed;inset:0;background:linear-gradient(150deg,#0d1f04 0%,#264f12 55%,#3d7520 100%);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s;}
 .login-screen.hidden{opacity:0;pointer-events:none;}
-.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(4,44,83,.35);}
+.login-box{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.25);}
 .login-logo{text-align:center;margin-bottom:1.75rem;}
-.login-logo-icon{width:52px;height:52px;background:var(--blue-600);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
-.login-logo-icon svg{width:26px;height:26px;fill:#fff;}
-.login-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--gray-900);}
-.login-sub{font-size:13px;color:var(--gray-400);margin-top:3px;}
+.login-logo-icon{width:110px;height:110px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.login-title{font-family:'Amiri',serif;font-size:26px;font-weight:700;color:var(--dgreen-700);letter-spacing:.3px;}
+.login-sub{font-size:12px;color:var(--gray-400);margin-top:2px;font-family:'Amiri',serif;font-style:italic;}
 .login-form .form-group{margin-bottom:.875rem;}
 .login-form label{display:block;font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.login-form input{width:100%;padding:9px 12px;font-family:'Source Sans 3',sans-serif;font-size:14px;border:1px solid var(--gray-200);border-radius:8px;outline:none;transition:border-color .15s;}
-.login-form input:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--blue-50);}
+.login-form input{width:100%;padding:9px 12px;font-family:'Inter',sans-serif;font-size:14px;border:1px solid var(--gray-200);border-radius:8px;outline:none;transition:border-color .15s;}
+.login-form input:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(--green-50);}
 .login-error{font-size:12px;color:var(--red-600);background:var(--red-50);border:1px solid var(--red-200);border-radius:6px;padding:8px 12px;margin-bottom:.875rem;display:none;}
 .login-error.show{display:block;}
-.btn-login{width:100%;padding:11px;background:var(--blue-600);color:#fff;border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.5rem;}
-.btn-login:hover{background:var(--blue-800);}
+.btn-login{width:100%;padding:11px;background:var(--dgreen-700);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.5rem;}
+.btn-login:hover{background:var(--dgreen-800);}
 .btn-login:disabled{opacity:.6;cursor:not-allowed;}
 
 /* ── APP ── */
@@ -45,18 +46,18 @@ body{font-family:'Source Sans 3',sans-serif;font-size:15px;background:var(--gray
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-icon{width:32px;height:32px;background:var(--blue-600);border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .brand-icon svg{width:18px;height:18px;fill:#fff;}
-.brand-name{font-family:'Lora',serif;font-weight:600;font-size:17px;color:var(--gray-900);}
+.brand-name{font-family:'Inter',sans-serif;font-weight:600;font-size:17px;color:var(--gray-900);}
 .brand-sub{font-size:12px;color:var(--gray-400);}
 .header-right{display:flex;align-items:center;gap:12px;}
 .user-badge{font-size:12px;color:var(--gray-600);background:var(--gray-100);padding:4px 10px;border-radius:20px;}
-.btn-logout{padding:5px 12px;font-size:12px;background:#fff;border:1px solid var(--gray-200);color:var(--gray-600);border-radius:6px;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
+.btn-logout{padding:5px 12px;font-size:12px;background:#fff;border:1px solid var(--gray-200);color:var(--gray-600);border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-logout:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
 .header-stats{display:flex;gap:1.5rem;align-items:center;}
 .stat-pill{font-size:13px;color:var(--gray-600);display:flex;align-items:center;gap:5px;}
 .stat-pill strong{font-weight:600;color:var(--gray-800);}
 
 .app-nav{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;}
-.nav-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--gray-600);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;font-family:'Source Sans 3',sans-serif;transition:all .15s;white-space:nowrap;}
+.nav-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--gray-600);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;}
 .nav-tab:hover{color:var(--blue-600);}
 .nav-tab.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
 
@@ -67,30 +68,30 @@ body{font-family:'Source Sans 3',sans-serif;font-size:15px;background:var(--gray
 .db-dot.err{background:var(--red-600);}
 .db-dot.loading{background:var(--amber-600);animation:pulse .8s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.btn-import-sm{padding:3px 10px;font-size:11px;font-weight:600;border-radius:4px;border:1px solid;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;}
+.btn-import-sm{padding:3px 10px;font-size:11px;font-weight:600;border-radius:4px;border:1px solid;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
 
 .page{display:none;}.page.active{display:block;}
 .app-body{max-width:1200px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start;}
 .app-body-full{max-width:1200px;margin:0 auto;padding:2rem;}
 
-.panel{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;}
-.panel-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
-.panel-title{font-family:'Lora',serif;font-size:14px;font-weight:600;color:var(--gray-900);}
-.panel-subtitle{font-size:12px;color:var(--gray-400);margin-top:2px;}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.panel-header{padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#111827;}
+.panel-subtitle{font-size:12px;color:#9ca3af;margin-top:2px;}
 .panel-body{padding:1.25rem;}
 
-label.field-label{display:block;font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+label.field-label{display:block;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
 .opt{color:var(--gray-400);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:3px;}
 .form-group{margin-bottom:.875rem;}
-input[type="text"],input[type="email"],input[type="url"],input[type="date"],select{width:100%;padding:7px 10px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--gray-800);background:#fff;border:1px solid var(--gray-200);border-radius:6px;outline:none;transition:border-color .15s;}
-input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--blue-50);}
+input[type="text"],input[type="email"],input[type="url"],input[type="date"],select{width:100%;padding:7px 10px;font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;border:1px solid #e5e7eb;border-radius:8px;outline:none;transition:border-color .15s;}
+input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(--green-50);}
 .validation-msg{font-size:11px;color:var(--red-600);margin-top:3px;display:none;}
 .validation-msg.show{display:block;}
 
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:500;border-radius:6px;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .btn:active{transform:scale(.98);}
-.btn-primary{background:var(--blue-600);border-color:var(--blue-600);color:#fff;width:100%;justify-content:center;padding:9px;font-size:14px;}
-.btn-primary:hover{background:var(--blue-800);}
+.btn-primary{background:#264f12;border-color:#264f12;color:#fff;width:100%;justify-content:center;padding:9px;font-size:14px;}
+.btn-primary:hover{background:#1a3a08;}
 .btn-sm{padding:4px 9px;font-size:12px;border-radius:5px;}
 .btn-xs{padding:3px 7px;font-size:11px;border-radius:4px;}
 .btn-review{background:var(--teal-50);border-color:var(--teal-600);color:var(--teal-800);}
@@ -104,9 +105,9 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .btn-publish:hover{background:var(--green-800);}
 
 .filter-bar{display:flex;gap:8px;padding:.75rem 1.25rem;background:var(--gray-50);border-bottom:1px solid var(--gray-100);overflow-x:auto;flex-wrap:wrap;}
-.filter-btn{padding:3px 11px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Source Sans 3',sans-serif;}
-.filter-btn:hover{border-color:var(--blue-400);color:var(--blue-800);}
-.filter-btn.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;}
+.filter-btn{padding:4px 12px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif;}
+.filter-btn:hover{border-color:#3d7520;color:#264f12;}
+.filter-btn.active{background:#264f12;border-color:#264f12;color:#fff;}
 .adv-filters{padding:.75rem 1.25rem;background:#fff;border-bottom:1px solid var(--gray-100);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .adv-filters select,.adv-filters input{width:auto;padding:4px 8px;font-size:12px;}
 .bulk-actions{padding:.75rem 1.25rem;background:#fff;border-bottom:1px solid var(--gray-100);display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
@@ -114,10 +115,10 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .bulk-actions input[type="checkbox"]{width:16px;height:16px;margin:0;}
 .bulk-checkbox{display:flex;align-items:center;margin-right:12px;}
 .articles-list{padding:1rem;display:flex;flex-direction:column;gap:10px;}
-.article-card{border:1px solid var(--gray-200);border-radius:10px;background:#fff;overflow:hidden;transition:box-shadow .15s,border-color .15s;}
-.article-card:hover{border-color:var(--blue-200);box-shadow:0 2px 12px rgba(55,138,221,.08);}
+.article-card{border:1px solid #e5e7eb;border-radius:12px;background:#fff;overflow:hidden;transition:box-shadow .15s,border-color .15s;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.article-card:hover{border-color:#b5d9a0;box-shadow:0 4px 16px rgba(61,117,32,.1);}
 .article-card-header{padding:.875rem 1rem .75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-.article-title{font-family:'Lora',serif;font-size:14px;font-weight:500;color:var(--gray-900);line-height:1.4;flex:1;}
+.article-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--gray-900);line-height:1.4;flex:1;}
 .status-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;}
 .badge-submitted{background:var(--blue-50);color:var(--blue-800);border:1px solid var(--blue-100);}
 .badge-review{background:var(--teal-50);color:var(--teal-800);border:1px solid #9FE1CB;}
@@ -135,7 +136,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .author-row input{padding:5px 8px;font-size:13px;}
 .author-email-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:4px 10px 8px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);}
 .author-email-row input{padding:4px 8px;font-size:12px;}
-.add-author-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;color:var(--blue-600);background:var(--blue-50);border:none;border-top:1px solid var(--gray-100);cursor:pointer;width:100%;font-family:'Source Sans 3',sans-serif;font-weight:500;}
+.add-author-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;color:var(--blue-600);background:var(--blue-50);border:none;border-top:1px solid var(--gray-100);cursor:pointer;width:100%;font-family:'Inter',sans-serif;font-weight:500;}
 .add-author-btn:hover{background:var(--blue-100);}
 .author-remove{width:24px;height:24px;border:1px solid var(--gray-200);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;color:var(--gray-400);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .author-remove:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
@@ -159,7 +160,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .modal{background:#fff;border-radius:12px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;transform:translateY(8px);transition:transform .2s;}
 .modal-overlay.open .modal{transform:translateY(0);}
 .modal-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10;}
-.modal-title{font-family:'Lora',serif;font-size:15px;font-weight:600;}
+.modal-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;}
 .modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);border-radius:6px;cursor:pointer;background:#fff;font-size:16px;color:var(--gray-600);}
 .modal-close:hover{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
 .modal-body{padding:1.25rem;}
@@ -170,7 +171,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 
 .personnel-list{display:flex;flex-direction:column;gap:6px;}
 .personnel-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;font-size:13px;}
-.personnel-name-input{font-weight:500;border:none;background:none;outline:none;width:100%;font-size:13px;font-family:'Source Sans 3',sans-serif;}
+.personnel-name-input{font-weight:500;border:none;background:none;outline:none;width:100%;font-size:13px;font-family:'Inter',sans-serif;}
 .personnel-name-input[readonly]{cursor:pointer;}
 .personnel-name-input[readonly]:hover{background:var(--gray-50);}
 .personnel-name-input:not([readonly]){border:1px solid var(--blue-400);background:#fff;padding:2px 4px;border-radius:3px;}
@@ -178,7 +179,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .personnel-actions{display:flex;gap:4px;}
 .add-personnel-row{display:flex;gap:6px;margin-top:8px;}
 .add-personnel-row input{flex:1;padding:6px 10px;font-size:13px;}
-.btn-add-mini{padding:6px 12px;font-size:12px;background:var(--blue-50);border:1px solid var(--blue-400);color:var(--blue-800);border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:500;}
+.btn-add-mini{padding:6px 12px;font-size:12px;background:var(--blue-50);border:1px solid var(--blue-400);color:var(--blue-800);border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;}
 .btn-add-mini:hover{background:var(--blue-100);}
 
 .funding-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem;}
@@ -191,7 +192,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .fund-card.ac-amber .fund-card-value{color:var(--amber-600);}
 .issue-group{margin-bottom:1.5rem;}
 .issue-group-header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px 8px 0 0;border-bottom:2px solid var(--blue-400);}
-.issue-group-title{font-size:13px;font-weight:600;color:var(--blue-800);font-family:'Lora',serif;}
+.issue-group-title{font-size:13px;font-weight:600;color:var(--blue-800);font-family:'Inter',sans-serif;}
 .funding-table-wrap{border:1px solid var(--gray-200);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;background:#fff;}
 .funding-table{width:100%;border-collapse:collapse;font-size:13px;}
 .funding-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);}
@@ -232,7 +233,178 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 .empty-state p{font-size:14px;}
 .loading-row{text-align:center;padding:2rem;color:var(--gray-400);font-size:13px;}
 
-@media(max-width:768px){.app-body{grid-template-columns:1fr;padding:1rem;}.header-stats{display:none;}.funding-summary{grid-template-columns:repeat(2,1fr);}}
+/* ========== NEW SHELL: SIDEBAR + TOPBAR + HERO ========== */
+.app-shell-grid{display:grid;grid-template-columns:var(--sb-w) 1fr;min-height:100vh;transition:grid-template-columns .25s ease;}
+.app-shell-grid.collapsed{grid-template-columns:var(--sb-w-collapsed) 1fr;}
+
+.sidebar{background:#fff;color:#374151;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;border-right:1px solid #e5e7eb;}
+.sb-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #f0f2f4;height:60px;flex-shrink:0;}
+.sb-logo{width:38px;height:38px;background:transparent;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-logo svg{width:38px;height:38px;}
+.sb-brand{display:flex;flex-direction:column;line-height:1.1;overflow:hidden;}
+.sb-brand-name{font-family:'Amiri',serif;font-weight:700;font-size:16px;color:#111827;white-space:nowrap;}
+.sb-brand-sub{font-size:10px;color:#6b7280;white-space:nowrap;letter-spacing:.2px;}
+.collapsed .sb-brand{display:none;}
+.sb-toggle{margin-left:auto;width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;color:#9ca3af;flex-shrink:0;}
+.sb-toggle:hover{background:#f3f4f6;color:#374151;}
+.collapsed .sb-toggle{margin-left:0;}
+
+.sb-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.sb-section-label{font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;padding:10px 12px 6px;}
+.collapsed .sb-section-label{visibility:hidden;height:14px;padding:0;}
+.sb-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;color:#4b5563;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;text-align:left;transition:background .15s,color .15s;position:relative;}
+.sb-item:hover{background:#f3f4f6;color:#111827;}
+.sb-item.active{background:#e6f4d7;color:#1a4d0a;}
+.sb-item.active::before{content:"";position:absolute;left:-8px;top:6px;bottom:6px;width:3px;background:#3d7520;border-radius:0 3px 3px 0;}
+.sb-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;}
+.sb-item-label{flex:1;white-space:nowrap;overflow:hidden;}
+.sb-item-badge{background:#1a4d0a;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;min-width:20px;text-align:center;}
+.sb-item.active .sb-item-badge{background:#1a4d0a;color:#fff;}
+.collapsed .sb-item{justify-content:center;padding:10px;}
+.collapsed .sb-item-label,.collapsed .sb-item-badge{display:none;}
+
+.sb-foot{border-top:1px solid #f0f2f4;padding:12px;flex-shrink:0;}
+.sb-user{display:flex;align-items:center;gap:10px;padding:6px 4px 10px;}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3d7520,#7cbd3e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.sb-user-meta{overflow:hidden;flex:1;}
+.sb-user-email{font-size:12px;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:10px;color:#6b7280;}
+.collapsed .sb-user-meta{display:none;}
+.sb-logout{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;background:transparent;border:1px solid #e5e7eb;color:#6b7280;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;}
+.sb-logout:hover{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
+.sb-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.collapsed .sb-logout span{display:none;}
+
+.main-col{display:flex;flex-direction:column;min-width:0;}
+
+.topbar{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 1.5rem;display:flex;align-items:center;gap:1rem;height:56px;position:sticky;top:0;z-index:90;}
+.crumbs{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-600);min-width:0;}
+.crumb-home{color:var(--gray-400);}
+.crumb-sep{color:var(--gray-200);}
+.crumb-current{color:var(--gray-900);font-weight:600;}
+.tb-right{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap;}
+.tb-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:20px;font-size:12px;color:var(--gray-600);}
+.tb-pill strong{font-weight:700;color:var(--gray-900);font-size:13px;}
+.tb-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--gray-400);}
+.tb-pill.tb-total .dot{background:var(--blue-600);}
+.tb-pill.tb-review .dot{background:var(--teal-600);}
+.tb-pill.tb-pub .dot{background:var(--green-600);}
+.tb-db{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid;}
+.tb-db.ok{background:#EAF7EE;border-color:#B6E0BF;color:var(--green-800);}
+.tb-db.err{background:var(--red-50);border-color:var(--red-200);color:var(--red-600);}
+.tb-db.loading{background:var(--amber-50);border-color:#F0D6A8;color:var(--amber-800);}
+.tb-db .dot{width:7px;height:7px;border-radius:50%;}
+.tb-db.ok .dot{background:var(--green-600);}
+.tb-db.err .dot{background:var(--red-600);}
+.tb-db.loading .dot{background:var(--amber-600);animation:pulse .8s infinite;}
+
+.hero{background:linear-gradient(120deg,var(--dgreen-900) 0%,var(--dgreen-700) 55%,var(--dgreen-600) 100%);color:#fff;padding:1.5rem 1.75rem 1.4rem;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(91,199,155,.18),transparent 65%);pointer-events:none;}
+.hero::after{content:"";position:absolute;left:30%;bottom:-100px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(91,199,155,.1),transparent 70%);pointer-events:none;}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;}
+.live-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.live-badge{display:inline-flex;align-items:center;gap:7px;padding:3px 10px;background:rgba(91,199,155,.18);border:1px solid rgba(91,199,155,.4);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#A8E6C9;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--dgreen-300);box-shadow:0 0 0 0 rgba(91,199,155,.7);animation:livepulse 1.6s infinite;}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(91,199,155,.7);}70%{box-shadow:0 0 0 8px rgba(91,199,155,0);}100%{box-shadow:0 0 0 0 rgba(91,199,155,0);}}
+.hero-time{font-size:11px;color:#9CC0AE;letter-spacing:.3px;}
+.hero-title{font-family:'Inter',sans-serif;font-size:26px;font-weight:600;line-height:1.2;margin-bottom:4px;}
+.hero-sub{font-size:13px;color:#B8D4C7;margin-bottom:14px;max-width:640px;line-height:1.5;}
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:20px;font-size:12px;backdrop-filter:blur(4px);color:#E5F0EA;}
+.hero-chip strong{color:#fff;font-weight:700;font-size:13px;}
+.hero-chip .ico{width:6px;height:6px;border-radius:50%;background:var(--dgreen-300);}
+.hero-chip.cdb .ico{background:#A8E6C9;animation:livepulse 1.6s infinite;}
+.hero-chip.cdb.err .ico{background:#FCA5A5;animation:none;}
+
+.page-container{flex:1;background:var(--gray-50);}
+.app-body{max-width:1200px;margin:0 auto;padding:1.5rem 1.75rem;display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start;}
+.app-body-full{max-width:1200px;margin:0 auto;padding:1.5rem 1.75rem;}
+
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem;}
+.dash-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;}
+.dash-card .dc-icon{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.dash-card .dc-icon svg{width:18px;height:18px;}
+.dash-card .dc-label{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.dash-card .dc-val{font-size:34px;font-weight:700;line-height:1;color:#111827;font-family:'Inter',sans-serif;letter-spacing:-.5px;}
+.dash-card .dc-sub{font-size:12px;color:var(--gray-600);margin-top:6px;}
+.dc-blue .dc-icon{background:var(--blue-50);color:var(--blue-600);}
+.dc-blue .dc-val{color:var(--blue-600);}
+.dc-teal .dc-icon{background:var(--teal-50);color:var(--teal-600);}
+.dc-teal .dc-val{color:var(--teal-600);}
+.dc-green .dc-icon{background:#E5F2D8;color:var(--green-600);}
+.dc-green .dc-val{color:var(--green-600);}
+.dc-red .dc-icon{background:var(--red-50);color:var(--red-600);}
+.dc-red .dc-val{color:var(--red-600);}
+.dash-card svg{stroke:currentColor;fill:none;stroke-width:1.8;}
+
+.dash-row{display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-bottom:1.5rem;}
+.dash-recent .recent-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--gray-100);font-size:13px;}
+.dash-recent .recent-item:last-child{border-bottom:none;}
+.recent-title{flex:1;color:var(--gray-800);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.recent-date{font-size:11px;color:var(--gray-400);white-space:nowrap;}
+.recent-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;}
+.dash-quick{display:flex;flex-direction:column;gap:8px;padding:1.1rem;}
+.quick-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--gray-200);border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;color:var(--gray-800);text-align:left;transition:all .15s;}
+.quick-btn:hover{border-color:var(--dgreen-600);background:#F4FAF7;}
+.quick-btn svg{width:16px;height:16px;stroke:var(--dgreen-700);fill:none;stroke-width:1.8;flex-shrink:0;}
+.dash-tools{display:flex;gap:8px;flex-wrap:wrap;padding:0 1.1rem 1.1rem;}
+
+@media(max-width:900px){
+  .app-shell-grid{grid-template-columns:var(--sb-w-collapsed) 1fr;}
+  .app-body{grid-template-columns:1fr;padding:1rem;}
+  .tb-right .tb-pill{display:none;}
+  .funding-summary{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:repeat(3,1fr)!important;}
+  .dash-row{grid-template-columns:1fr;}
+  .hero-title{font-size:20px;}
+}
+
+/* ── ARTICLE FORM HORIZONTAL ── */
+.article-form-header{background:linear-gradient(120deg,var(--dgreen-900) 0%,var(--dgreen-700) 100%);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-radius:11px 11px 0 0;}
+.article-form-header .panel-title{color:#fff;font-family:'Inter',sans-serif;}
+.article-form-header .panel-subtitle{color:rgba(255,255,255,.55);font-size:12px;margin-top:2px;}
+.article-form-header .form-mode-indicator{background:rgba(255,255,255,.15);color:#A8E6C9;border:1px solid rgba(255,255,255,.25);}
+.afh-icon{width:32px;height:32px;background:rgba(255,255,255,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px;}
+.afh-icon svg{width:16px;height:16px;stroke:#A8E6C9;fill:none;stroke-width:1.8;}
+.article-form-grid{display:grid;grid-template-columns:1fr 145px 200px;gap:12px;align-items:start;}
+.afg-actions{display:flex;gap:8px;align-items:flex-end;padding-bottom:1px;}
+.article-authors-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--gray-100);}
+.article-authors-col{min-width:0;}
+@media(max-width:900px){.article-form-grid{grid-template-columns:1fr;}.article-authors-row{grid-template-columns:1fr;}}
+
+/* ── PROGRESS TIMELINE ── */
+.progress-timeline{display:flex;align-items:flex-start;padding:28px 12px 8px;position:relative;overflow-x:auto;min-width:0;}
+.progress-stage{display:flex;flex-direction:column;align-items:center;flex:1;min-width:82px;position:relative;cursor:pointer;user-select:none;transition:opacity .15s;}
+.progress-stage:hover{opacity:.85;}
+.progress-stage:not(:last-child)::after{content:'';position:absolute;top:16px;left:calc(50% + 18px);right:calc(-50% + 18px);height:2px;background:var(--gray-200);z-index:0;transition:background .3s;}
+.progress-stage.done:not(:last-child)::after{background:var(--dgreen-600);}
+.ps-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--gray-300);background:#fff;display:flex;align-items:center;justify-content:center;z-index:1;position:relative;transition:all .2s;font-size:12px;font-weight:700;color:var(--gray-400);}
+.progress-stage.done .ps-dot{background:var(--dgreen-600);border-color:var(--dgreen-600);color:#fff;box-shadow:0 0 0 3px rgba(27,107,77,.15);}
+.progress-stage.next .ps-dot{border-color:var(--dgreen-600);color:var(--dgreen-600);box-shadow:0 0 0 5px rgba(91,199,155,.2);animation:nextpulse 1.8s infinite;}
+@keyframes nextpulse{0%,100%{box-shadow:0 0 0 5px rgba(91,199,155,.2);}50%{box-shadow:0 0 0 9px rgba(91,199,155,0);}}
+.progress-stage.optional .ps-dot{border-style:dashed;}
+.ps-label{font-size:11px;font-weight:600;color:var(--gray-600);margin-top:8px;text-align:center;line-height:1.2;}
+.progress-stage.done .ps-label{color:var(--dgreen-800);}
+.progress-stage.next .ps-label{color:var(--dgreen-600);}
+.ps-opt{font-size:9px;color:var(--gray-400);background:var(--gray-100);border-radius:3px;padding:1px 5px;margin-top:2px;display:inline-block;}
+.ps-date{font-size:10px;color:var(--gray-400);margin-top:3px;text-align:center;min-height:14px;line-height:1.3;}
+.progress-stage.done .ps-date{color:var(--dgreen-600);font-weight:500;}
+.progress-summary{display:flex;align-items:center;gap:8px;padding:10px 0 0;border-top:1px solid var(--gray-100);margin-top:8px;}
+.progress-bar-track{flex:1;height:6px;background:var(--gray-100);border-radius:3px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--dgreen-600),var(--dgreen-300));border-radius:3px;transition:width .4s ease;}
+.progress-pct{font-size:12px;font-weight:700;color:var(--dgreen-700);min-width:36px;text-align:right;}
+.progress-hint{font-size:11px;color:var(--gray-400);text-align:center;padding:8px 0 0;}
+/* mini progress dots on article card */
+.card-progress-row{display:flex;align-items:center;gap:7px;padding:5px 1rem 9px;border-top:1px solid var(--gray-100);}
+.card-prog-dots{display:flex;gap:3px;align-items:center;}
+.cpd{width:9px;height:9px;border-radius:50%;transition:background .2s;}
+.cpd.done{background:var(--dgreen-600);}
+.cpd.next{background:var(--dgreen-300);}
+.cpd.pending{background:var(--gray-200);}
+.cpd.opt-done{background:var(--dgreen-400);}
+.card-prog-label{font-size:11px;color:var(--gray-400);}
+.article-title-link{cursor:pointer;transition:color .15s;}
+.article-title-link:hover{color:var(--dgreen-700);}
 </style>
 </head>
 <body>
@@ -242,10 +414,10 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
   <div class="login-box">
     <div class="login-logo">
       <div class="login-logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+        <img src="logo.png" alt="Al-Usariyah" style="width:110px;height:110px;object-fit:contain;" />
       </div>
-      <div class="login-title">Al Usariyah</div>
-      <div class="login-sub">Journal Article Tracker</div>
+      <div class="login-title">Al-Usariyah</div>
+      <div class="login-sub">Jurnal Hukum Keluarga Islam</div>
     </div>
     <div class="login-form">
       <div class="login-error" id="loginError"></div>
@@ -264,58 +436,221 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 
 <!-- APP SHELL -->
 <div id="appShell" style="display:none;">
+<div class="app-shell-grid" id="appShellGrid">
 
-<header class="app-header">
-  <div class="brand">
-    <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg></div>
-    <div><div class="brand-name">Al Usariyah</div><div class="brand-sub">Journal Article Tracker</div></div>
-  </div>
-  <div class="header-right">
-    <div class="header-stats">
-      <div class="stat-pill">Total: <strong id="statTotal">0</strong></div>
-      <div class="stat-pill">Review: <strong id="statReview">0</strong></div>
-      <div class="stat-pill">Terbit: <strong id="statPublished">0</strong></div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo" style="background:transparent;width:38px;height:38px;">
+      <img src="logo.png" alt="Al-Usariyah" style="width:38px;height:38px;object-fit:contain;" />
     </div>
-    <div class="user-badge" id="userBadge">—</div>
-    <button class="btn-logout" onclick="doLogout()">Keluar</button>
+    <div class="sb-brand"><div class="sb-brand-name" style="font-family:'Amiri',serif;">Al-Usariyah</div><div class="sb-brand-sub">Jurnal Hukum Keluarga Islam</div></div>
+    <button class="sb-toggle" onclick="toggleSidebar()" title="Tutup/Buka sidebar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" id="sbToggleIcon"/></svg></button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section-label">Menu</div>
+    <button class="sb-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+      <span class="sb-item-label">Dashboard</span>
+    </button>
+    <button class="sb-item" data-page="articles" onclick="showPage('articles',this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+      <span class="sb-item-label">Artikel</span>
+      <span class="sb-item-badge" id="navBadgeArticles">0</span>
+    </button>
+    <button class="sb-item" data-page="funding" onclick="showPage('funding',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h4.5a1.5 1.5 0 010 3H9m0 0h5"/></svg>
+      <span class="sb-item-label">Pendanaan</span>
+    </button>
+    <button class="sb-item" data-page="personnel" onclick="showPage('personnel',this)">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.5.3 5 2 5 5"/></svg>
+      <span class="sb-item-label">Personel</span>
+    </button>
+    <button class="sb-item" data-page="statistik" onclick="showPage('statistik',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 20h18M6 20V10M12 20V5M18 20v-7"/></svg>
+      <span class="sb-item-label">Statistik</span>
+    </button>
+
+    <div class="sb-section-label" style="margin-top:8px;">Data</div>
+    <button class="sb-item" onclick="exportArticlesExcel()">
+      <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+      <span class="sb-item-label">Export Excel</span>
+    </button>
+    <button class="sb-item" onclick="document.getElementById('importFileInput').click()">
+      <svg viewBox="0 0 24 24"><path d="M12 20V8m0 0l-4 4m4-4l4 4M4 4h16"/></svg>
+      <span class="sb-item-label">Import Excel</span>
+    </button>
+    <button class="sb-item" onclick="downloadTemplate()">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span class="sb-item-label">Template</span>
+    </button>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importFromExcel(this)" />
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">A</div>
+      <div class="sb-user-meta">
+        <div class="sb-user-email" id="sbUserEmail">—</div>
+        <div class="sb-user-role">Admin</div>
+      </div>
+    </div>
+    <button class="sb-logout" onclick="doLogout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      <span>Keluar</span>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN COLUMN -->
+<div class="main-col">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="crumbs">
+    <span class="crumb-home">Al Usariyah</span>
+    <span class="crumb-sep">/</span>
+    <span class="crumb-current" id="crumbCurrent">Dashboard</span>
+  </div>
+  <div class="tb-right">
+    <span class="tb-pill tb-total"><span class="dot"></span>Total <strong id="statTotal">0</strong></span>
+    <span class="tb-pill tb-review"><span class="dot"></span>Review <strong id="statReview">0</strong></span>
+    <span class="tb-pill tb-pub"><span class="dot"></span>Terbit <strong id="statPublished">0</strong></span>
+    <span class="tb-db loading" id="tbDb"><span class="dot"></span><span id="tbDbLabel">Menghubungkan...</span></span>
   </div>
 </header>
 
-<nav class="app-nav">
-  <button class="nav-tab active" onclick="showPage('articles',this)">Artikel</button>
-  <button class="nav-tab" onclick="showPage('funding',this)">Pendanaan</button>
-  <button class="nav-tab" onclick="showPage('personnel',this)">Personel</button>
-  <button class="nav-tab" onclick="showPage('statistik',this)">Statistik</button>
-</nav>
+<!-- HERO BANNER -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="live-row">
+      <span class="live-badge"><span class="live-dot"></span>Live</span>
+      <span class="hero-time" id="heroTime"></span>
+    </div>
+    <h1 class="hero-title" id="heroTitle">Dashboard</h1>
+    <p class="hero-sub" id="heroSub">Ringkasan pelacakan artikel jurnal Al Usariyah secara real-time.</p>
+    <div class="hero-chips">
+      <span class="hero-chip"><span class="ico"></span>Total Artikel <strong id="heroTotal">0</strong></span>
+      <span class="hero-chip"><span class="ico"></span>Review <strong id="heroReview">0</strong></span>
+      <span class="hero-chip"><span class="ico"></span>Terbit <strong id="heroPublished">0</strong></span>
+      <span class="hero-chip cdb" id="heroDb"><span class="ico"></span><span id="heroDbLabel">DB: Menghubungkan...</span></span>
+    </div>
+  </div>
+</section>
 
-<div class="db-bar">
-  <div class="db-dot loading" id="dbDot"></div>
-  <span id="dbLabel">Menghubungkan ke database...</span>
-  <button class="btn-import-sm" onclick="exportArticlesExcel()" style="background:var(--green-50);border-color:var(--green-600);color:var(--green-800);">&#8681; Export Excel</button>
-  <button class="btn-import-sm" onclick="document.getElementById('importFileInput').click()" style="background:var(--amber-50);border-color:var(--amber-600);color:var(--amber-800);">&#8659; Import Excel</button>
-  <button class="btn-import-sm" onclick="downloadTemplate()" style="background:var(--gray-50);border-color:var(--gray-400);color:var(--gray-700);">&#8659; Template</button>
-  <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importFromExcel(this)" />
+<div class="page-container">
+
+<!-- PAGE: DASHBOARD -->
+<div class="page active" id="page-dashboard">
+<div class="app-body-full">
+  <div class="dash-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="dash-card dc-blue">
+      <div class="dc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></div>
+      <div class="dc-label">Total Artikel</div>
+      <div class="dc-val" id="dashTotal">0</div>
+      <div class="dc-sub" id="dashTotalSub">Seluruh data tercatat</div>
+    </div>
+    <div class="dash-card dc-blue">
+      <div class="dc-icon" style="background:#FEF3C7;color:#92400E;"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div>
+      <div class="dc-label">Diajukan</div>
+      <div class="dc-val" id="dashSubmitted" style="color:#92400E;">0</div>
+      <div class="dc-sub">Menunggu ditinjau</div>
+    </div>
+    <div class="dash-card dc-teal">
+      <div class="dc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div class="dc-label">Direview</div>
+      <div class="dc-val" id="dashReview">0</div>
+      <div class="dc-sub">Sedang dalam proses</div>
+    </div>
+    <div class="dash-card dc-green">
+      <div class="dc-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="dc-label">Terbit</div>
+      <div class="dc-val" id="dashPublished">0</div>
+      <div class="dc-sub" id="dashPublishedSub">Sudah dipublikasikan</div>
+    </div>
+    <div class="dash-card dc-red">
+      <div class="dc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+      <div class="dc-label">Ditolak</div>
+      <div class="dc-val" id="dashRejected">0</div>
+      <div class="dc-sub">Tidak lolos seleksi</div>
+    </div>
+  </div>
+
+  <div class="dash-row">
+    <div class="panel dash-recent">
+      <div class="panel-header">
+        <div><div class="panel-title">Artikel Terbaru</div><div class="panel-subtitle">5 pengajuan terakhir</div></div>
+        <button class="btn btn-delete btn-xs" onclick="showPage('articles',document.querySelector('[data-page=articles]'))">Lihat semua &rarr;</button>
+      </div>
+      <div id="dashRecentList" style="padding:6px 0;"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Aksi Cepat</div><div class="panel-subtitle">Pintasan operasi</div></div></div>
+      <div class="dash-quick">
+        <button class="quick-btn" onclick="showPage('articles',document.querySelector('[data-page=articles]'))">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke-width="2"/></svg>
+          Tambah Artikel Baru
+        </button>
+        <button class="quick-btn" onclick="document.getElementById('importFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 20V8m0 0l-4 4m4-4l4 4M4 4h16"/></svg>
+          Import dari Excel
+        </button>
+        <button class="quick-btn" onclick="exportArticlesExcel()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+          Export Data Excel
+        </button>
+        <button class="quick-btn" onclick="showPage('statistik',document.querySelector('[data-page=statistik]'))">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 20h18M6 20V10M12 20V5M18 20v-7"/></svg>
+          Lihat Statistik
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:1rem;">
+    <div class="panel-header"><div><div class="panel-title">Distribusi Status</div><div class="panel-subtitle">Persentase tiap tahapan</div></div></div>
+    <div style="padding:1.1rem;">
+      <div id="dashStatusBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--gray-100);"></div>
+      <div id="dashStatusLegend" style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--gray-600);"></div>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- PAGE: ARTICLES -->
-<div class="page active" id="page-articles">
-<div class="app-body">
-  <div>
-    <div class="panel">
-      <div class="panel-header">
+<div class="page" id="page-articles">
+<div class="app-body-full">
+
+  <!-- FORM HORIZONTAL -->
+  <div class="panel" style="margin-bottom:1.25rem;">
+    <div class="article-form-header">
+      <div style="display:flex;align-items:center;">
+        <div class="afh-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg></div>
         <div>
           <div class="panel-title" id="formPanelTitle">Tambah Artikel</div>
           <div class="panel-subtitle" id="formPanelSub">Formulir pengajuan artikel baru</div>
         </div>
-        <span class="form-mode-indicator" id="formModeIndicator">Edit Mode</span>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
+      <span class="form-mode-indicator" id="formModeIndicator">Edit Mode</span>
+    </div>
+    <div class="panel-body">
+      <div class="article-form-grid">
+        <div>
           <label class="field-label">Judul Artikel</label>
-          <input type="text" id="fieldTitle" placeholder="Masukkan judul artikel..." />
+          <input type="text" id="fieldTitle" placeholder="Masukkan judul artikel lengkap..." />
           <div class="validation-msg" id="errTitle">Judul wajib diisi</div>
         </div>
-        <div class="form-group">
+        <div>
+          <label class="field-label">Tanggal Pengajuan</label>
+          <input type="date" id="fieldDate" />
+          <div class="validation-msg" id="errDate">Tanggal wajib diisi</div>
+        </div>
+        <div>
+          <label class="field-label">DOI <span class="opt">opsional</span></label>
+          <input type="url" id="fieldDoi" placeholder="https://doi.org/10.xxxx/..." />
+        </div>
+      </div>
+      <div class="article-authors-row">
+        <div class="article-authors-col">
           <label class="field-label">Penulis &amp; Afiliasi</label>
           <div class="authors-box" id="authorsBox"></div>
           <button class="add-author-btn" onclick="addAuthorField()">
@@ -324,31 +659,22 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
           </button>
           <div class="validation-msg" id="errAuthors">Minimal satu penulis wajib diisi</div>
         </div>
-        <div class="form-group">
-          <label class="field-label">Tanggal Pengajuan</label>
-          <input type="date" id="fieldDate" />
-          <div class="validation-msg" id="errDate">Tanggal wajib diisi</div>
-        </div>
-        <div class="form-group">
-          <label class="field-label">DOI <span class="opt">opsional</span></label>
-          <input type="url" id="fieldDoi" placeholder="https://doi.org/10.xxxx/..." />
-        </div>
-        <div class="form-divider"></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary" id="btnSubmit" onclick="submitArticle()">Simpan Artikel</button>
-          <button class="btn btn-delete btn-sm" id="btnCancelEdit" onclick="cancelEdit()" style="display:none;flex-shrink:0;">Batal</button>
+        <div class="afg-actions">
+          <button class="btn btn-primary" id="btnSubmit" onclick="submitArticle()" style="white-space:nowrap;">Simpan Artikel</button>
+          <button class="btn btn-delete btn-sm" id="btnCancelEdit" onclick="cancelEdit()" style="display:none;white-space:nowrap;">Batal</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ARTICLE LIST -->
   <div class="panel">
     <div class="panel-header">
       <div>
-        <div class="panel-title">Dashboard Artikel</div>
+        <div class="panel-title">Daftar Artikel</div>
         <div class="panel-subtitle" id="dashboardSubtitle">Memuat...</div>
       </div>
-      <input type="text" id="searchInput" placeholder="Cari judul / penulis..." oninput="applyFilters()" style="width:190px;padding:5px 10px;font-size:13px;" />
+      <input type="text" id="searchInput" placeholder="Cari judul / penulis..." oninput="applyFilters()" style="width:200px;padding:5px 10px;font-size:13px;" />
     </div>
     <div class="filter-bar">
       <button class="filter-btn active" onclick="setFilter(this,'all')">Semua</button>
@@ -371,6 +697,7 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
     </div>
     <div id="articlesList" class="articles-list"><div class="loading-row">Memuat artikel...</div></div>
   </div>
+
 </div>
 </div>
 
@@ -452,7 +779,34 @@ input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(-
 </div>
 </div>
 
+</div><!-- end page-container -->
+</div><!-- end main-col -->
+</div><!-- end app-shell-grid -->
 </div><!-- end appShell -->
+
+<!-- PROGRESS MODAL -->
+<div class="modal-overlay" id="progressModal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="progressModalTitle">Progres Artikel</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Klik tahap untuk menandai selesai · Klik lagi untuk membatalkan</div>
+      </div>
+      <button class="modal-close" onclick="closeProgressModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:1.5rem 1.25rem 1rem;">
+      <div id="progressTimeline"></div>
+      <div class="progress-summary">
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBarFill" style="width:0%"></div></div>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-hint">Tahap yang sudah ditandai mencatat tanggal otomatis. Klik lagi untuk membatalkan (akan mereset tahap berikutnya).</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-delete btn-sm" onclick="closeProgressModal()">Tutup</button>
+    </div>
+  </div>
+</div>
 
 <!-- REVIEW MODAL -->
 <div class="modal-overlay" id="reviewModal">
@@ -520,6 +874,17 @@ let importBuffer = [];
 let selectedArticleIds = new Set();
 let currentUser = null;
 let chartInstances = {};
+let progressingId = null;
+
+const PROGRESS_STAGES = [
+  { key:'review',    label:'Review',    optional:false },
+  { key:'revisi1',   label:'Revisi 1',  optional:false },
+  { key:'revisi2',   label:'Revisi 2',  optional:true  },
+  { key:'turnitin',  label:'Turnitin',  optional:false },
+  { key:'layouting', label:'Layouting', optional:false },
+  { key:'eyd',       label:'EYD',       optional:false },
+  { key:'publish',   label:'Publish',   optional:false }
+];
 
 // ============================================================
 //  AUTH
@@ -553,10 +918,33 @@ async function doLogout() {
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appShell').style.display = 'block';
-  document.getElementById('userBadge').textContent = currentUser.email;
+  const email = currentUser.email || '';
+  document.getElementById('sbUserEmail').textContent = email;
+  document.getElementById('sbAvatar').textContent = (email[0]||'A').toUpperCase();
   document.getElementById('fieldDate').valueAsDate = new Date();
+  startHeroClock();
   addAuthorField();
   loadAll();
+}
+
+function toggleSidebar() {
+  const grid = document.getElementById('appShellGrid');
+  grid.classList.toggle('collapsed');
+  const icon = document.querySelector('.sb-toggle svg path');
+  if (icon) icon.setAttribute('d', grid.classList.contains('collapsed') ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6');
+}
+
+function startHeroClock() {
+  const tick = function() {
+    const el = document.getElementById('heroTime');
+    if (!el) return;
+    const now = new Date();
+    const opt = {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'};
+    el.textContent = now.toLocaleDateString('id-ID', opt) + ' WIB';
+  };
+  tick();
+  if (window.__heroTimer) clearInterval(window.__heroTimer);
+  window.__heroTimer = setInterval(tick, 30000);
 }
 
 // Check existing session on load
@@ -576,6 +964,9 @@ window.addEventListener('DOMContentLoaded', async function() {
   });
   document.getElementById('importModal').addEventListener('click', function(e) {
     if (e.target === this) closeImportModal();
+  });
+  document.getElementById('progressModal').addEventListener('click', function(e) {
+    if (e.target === this) closeProgressModal();
   });
 });
 
@@ -621,6 +1012,7 @@ function dbToArticle(row) {
     doi:          row.doi || '',
     status:       row.status || 'submitted',
     checklist:    row.checklist || { turnitin:false, eyd:false, layout:false },
+    progress:     row.progress || {},
     createdAt:    row.created_at
   };
 }
@@ -637,7 +1029,8 @@ function articleToDb(a) {
     issue:         a.issue || '',
     doi:           a.doi || '',
     status:        a.status,
-    checklist:     a.checklist
+    checklist:     a.checklist,
+    progress:      a.progress || {}
   };
 }
 
@@ -713,6 +1106,24 @@ async function rejectArticle(id) {
   if (idx !== -1) articles[idx].status = 'rejected';
   renderAll();
   showToast('Artikel ditolak', 'error');
+}
+
+async function restoreArticle(id) {
+  if (!confirm('Batalkan penolakan dan kembalikan artikel ini ke status Diajukan?')) return;
+  const updates = { status:'submitted', editor:'', reviewer:'', layout_worker:'', issue:'', progress:{} };
+  const { error } = await sb.from('articles').update(updates).eq('id', id);
+  if (error) { showToast('Gagal memulihkan: ' + error.message, 'error'); return; }
+  const idx = articles.findIndex(function(a){return a.id===id;});
+  if (idx !== -1) {
+    articles[idx].status = 'submitted';
+    articles[idx].editor = '';
+    articles[idx].reviewer = '';
+    articles[idx].layoutWorker = '';
+    articles[idx].issue = '';
+    articles[idx].progress = {};
+  }
+  renderAll();
+  showToast('Artikel dikembalikan ke Diajukan', 'success');
 }
 
 async function publishArticle(id) {
@@ -995,9 +1406,65 @@ function renderAll() {
 }
 
 function renderStats() {
-  document.getElementById('statTotal').textContent     = articles.length;
-  document.getElementById('statReview').textContent    = articles.filter(function(a){return a.status==='review';}).length;
-  document.getElementById('statPublished').textContent = articles.filter(function(a){return a.status==='published';}).length;
+  const total = articles.length;
+  const submitted = articles.filter(function(a){return a.status==='submitted';}).length;
+  const review = articles.filter(function(a){return a.status==='review';}).length;
+  const published = articles.filter(function(a){return a.status==='published';}).length;
+  const rejected = articles.filter(function(a){return a.status==='rejected';}).length;
+  // topbar pills
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statReview').textContent = review;
+  document.getElementById('statPublished').textContent = published;
+  // hero chips
+  document.getElementById('heroTotal').textContent = total;
+  document.getElementById('heroReview').textContent = review;
+  document.getElementById('heroPublished').textContent = published;
+  // sidebar badge
+  const nb = document.getElementById('navBadgeArticles');
+  if (nb) nb.textContent = total;
+  // dashboard cards
+  const dT=document.getElementById('dashTotal'); if(dT) dT.textContent = total;
+  const dS=document.getElementById('dashSubmitted'); if(dS) dS.textContent = submitted;
+  const dR=document.getElementById('dashReview'); if(dR) dR.textContent = review;
+  const dP=document.getElementById('dashPublished'); if(dP) dP.textContent = published;
+  const dRj=document.getElementById('dashRejected'); if(dRj) dRj.textContent = rejected;
+  renderDashboard(submitted, review, published, rejected, total);
+}
+
+function renderDashboard(submitted, review, published, rejected, total) {
+  // recent list
+  const list = document.getElementById('dashRecentList');
+  if (list) {
+    const recent = articles.slice(0,5);
+    if (!recent.length) {
+      list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:13px;">Belum ada artikel</div>';
+    } else {
+      const colors = {submitted:['#FEF3C7','#92400E','Diajukan'],review:['#E1F5EE','#085041','Review'],published:['#EAF3DE','#27500A','Terbit'],rejected:['#FCEBEB','#A32D2D','Ditolak']};
+      list.innerHTML = recent.map(function(a){
+        const c = colors[a.status]||['#EEF0F3','#5C6270',a.status];
+        const d = a.date ? new Date(a.date+'T12:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'}) : '-';
+        return '<div class="recent-item"><span class="recent-status" style="background:'+c[0]+';color:'+c[1]+';">'+c[2]+'</span><span class="recent-title">'+escH(a.title)+'</span><span class="recent-date">'+d+'</span></div>';
+      }).join('');
+    }
+  }
+  // status bar
+  const bar = document.getElementById('dashStatusBar');
+  const leg = document.getElementById('dashStatusLegend');
+  if (bar && leg) {
+    if (!total) {
+      bar.innerHTML = '<div style="flex:1;background:var(--gray-100);"></div>';
+      leg.innerHTML = '<span style="color:var(--gray-400)">Belum ada data</span>';
+    } else {
+      const segs = [
+        {k:'submitted',v:submitted,c:'#F59E0B',l:'Diajukan'},
+        {k:'review',v:review,c:'#0F6E56',l:'Review'},
+        {k:'published',v:published,c:'#3B6D11',l:'Terbit'},
+        {k:'rejected',v:rejected,c:'#A32D2D',l:'Ditolak'}
+      ];
+      bar.innerHTML = segs.map(function(s){return '<div style="width:'+(s.v/total*100)+'%;background:'+s.c+';" title="'+s.l+': '+s.v+'"></div>';}).join('');
+      leg.innerHTML = segs.map(function(s){return '<span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:'+s.c+';"></span>'+s.l+' <strong style="color:var(--gray-900)">'+s.v+'</strong> <span style="color:var(--gray-400)">('+(total?Math.round(s.v/total*100):0)+'%)</span></span>';}).join('');
+    }
+  }
 }
 
 function populateAdvFilters() {
@@ -1133,8 +1600,21 @@ function renderCard(a) {
     ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit Review</button>'+(allChecked?'<button class="btn btn-publish btn-sm" onclick="publishArticle(\''+a.id+'\')">Siap Publish</button>':'')
     : a.status==='published'
     ? '<button class="btn btn-review btn-sm" onclick="openReviewModal(\''+a.id+'\')">Edit</button>'
+    : a.status==='rejected'
+    ? '<button class="btn btn-save btn-sm" onclick="restoreArticle(\''+a.id+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Pulihkan</button>'
     : '';
-  return '<div class="article-card"><div class="article-card-header" style="align-items:center;"><label class="bulk-checkbox"><input type="checkbox" onchange="toggleArticleSelect(\''+a.id+'\', this.checked)" '+selectedCheck+' /></label><div class="article-title">'+escH(a.title)+'</div>'+(badges[a.status]||'')+'</div><div class="article-meta"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>'+authorLine+'</span></span></div>'+(emails?'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'+emails+'</span></div>':'')+'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11z"/></svg>'+dateFmt+'</span></div>'+reviewInfo+'<div class="article-card-body">'+checklistHTML+'<div class="card-actions">'+actions+'<button class="btn btn-edit btn-sm" onclick="startEdit(\''+a.id+'\')">Edit</button><button class="btn btn-delete btn-sm" onclick="deleteArticle(\''+a.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></div></div>';
+  // mini progress bar
+  const prog = a.progress || {};
+  const progDoneN = PROGRESS_STAGES.filter(function(s){return !!prog[s.key];}).length;
+  const miniDots = PROGRESS_STAGES.map(function(s,i){
+    const done = !!prog[s.key];
+    const isNext = !done && (i===0 || !!prog[PROGRESS_STAGES[i-1].key]);
+    const cls = done ? (s.optional?'opt-done':'done') : isNext?'next':'pending';
+    const tip = s.label + ': ' + (done ? new Date(prog[s.key]).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : 'belum');
+    return '<div class="cpd '+cls+'" title="'+tip+'"></div>';
+  }).join('');
+  const miniProg = '<div class="card-progress-row"><div class="card-prog-dots">'+miniDots+'</div><span class="card-prog-label">'+progDoneN+'/'+PROGRESS_STAGES.length+' tahap</span></div>';
+  return '<div class="article-card"><div class="article-card-header" style="align-items:center;"><label class="bulk-checkbox"><input type="checkbox" onchange="toggleArticleSelect(\''+a.id+'\', this.checked)" '+selectedCheck+' /></label><div class="article-title article-title-link" onclick="openProgressModal(\''+a.id+'\')" title="Lihat progres artikel">'+escH(a.title)+'</div>'+(badges[a.status]||'')+'</div><div class="article-meta"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>'+authorLine+'</span></span></div>'+(emails?'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'+emails+'</span></div>':'')+'<div class="article-meta" style="padding-top:0;"><span class="meta-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11z"/></svg>'+dateFmt+'</span></div>'+reviewInfo+miniProg+'<div class="article-card-body">'+checklistHTML+'<div class="card-actions">'+actions+'<button class="btn btn-edit btn-sm" onclick="startEdit(\''+a.id+'\')">Edit</button><button class="btn btn-delete btn-sm" onclick="deleteArticle(\''+a.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></div></div>';
 }
 
 // ============================================================
@@ -1242,11 +1722,26 @@ function exportFundingPDF() {
 // ============================================================
 //  PAGE NAVIGATION
 // ============================================================
+const PAGE_META = {
+  dashboard: {title:'Dashboard', sub:'Ringkasan pelacakan artikel jurnal Al Usariyah secara real-time.', crumb:'Dashboard'},
+  articles:  {title:'Manajemen Artikel', sub:'Kelola pengajuan, review, dan publikasi artikel.', crumb:'Artikel'},
+  funding:   {title:'Pendanaan', sub:'Penugasan editor, reviewer, dan layout per terbitan.', crumb:'Pendanaan'},
+  personnel: {title:'Personel', sub:'Daftar editor, reviewer, dan layout worker terdaftar.', crumb:'Personel'},
+  statistik: {title:'Statistik', sub:'Visualisasi data artikel dan distribusinya.', crumb:'Statistik'}
+};
+
 function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.sb-item[data-page]').forEach(function(b){b.classList.remove('active');});
   document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    const t = document.querySelector('[data-page="'+name+'"]'); if(t) t.classList.add('active');
+  }
+  const m = PAGE_META[name] || {title:name,sub:'',crumb:name};
+  const ht = document.getElementById('heroTitle'); if(ht) ht.textContent = m.title;
+  const hs = document.getElementById('heroSub'); if(hs) hs.textContent = m.sub;
+  const cc = document.getElementById('crumbCurrent'); if(cc) cc.textContent = m.crumb;
   if (name === 'funding')   renderFunding();
   if (name === 'statistik') renderCharts();
 }
@@ -1397,13 +1892,82 @@ function downloadTemplate() {
 }
 
 // ============================================================
+//  PROGRESS MODAL
+// ============================================================
+function openProgressModal(id) {
+  const a = articles.find(function(x){return x.id===id;});
+  if (!a) return;
+  if (a.status === 'rejected') { showToast('Artikel ditolak — progres tidak tersedia', 'error'); return; }
+  progressingId = id;
+  document.getElementById('progressModalTitle').textContent = a.title;
+  renderProgressTimeline(a);
+  document.getElementById('progressModal').classList.add('open');
+}
+
+function closeProgressModal() {
+  document.getElementById('progressModal').classList.remove('open');
+  progressingId = null;
+}
+
+function renderProgressTimeline(a) {
+  const prog = a.progress || {};
+  const doneN = PROGRESS_STAGES.filter(function(s){return !!prog[s.key];}).length;
+  const pct = Math.round(doneN / PROGRESS_STAGES.length * 100);
+
+  document.getElementById('progressBarFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  document.getElementById('progressTimeline').innerHTML =
+    '<div class="progress-timeline">' +
+    PROGRESS_STAGES.map(function(s, i) {
+      const done = !!prog[s.key];
+      const isNext = !done && (i === 0 || !!prog[PROGRESS_STAGES[i-1].key]);
+      const cls = 'progress-stage' + (done?' done':'') + (isNext?' next':'') + (s.optional?' optional':'');
+      const dateStr = done
+        ? new Date(prog[s.key]).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})
+        : '';
+      return '<div class="'+cls+'" onclick="toggleProgressStage(\''+s.key+'\')">' +
+        '<div class="ps-dot">' + (done ? '✓' : (i+1)) + '</div>' +
+        '<div class="ps-label">' + s.label + '</div>' +
+        (s.optional ? '<div class="ps-opt">opsional</div>' : '') +
+        '<div class="ps-date">' + dateStr + '</div>' +
+      '</div>';
+    }).join('') +
+    '</div>';
+}
+
+async function toggleProgressStage(key) {
+  const a = articles.find(function(x){return x.id===progressingId;});
+  if (!a) return;
+  if (!a.progress) a.progress = {};
+
+  const keyIdx = PROGRESS_STAGES.findIndex(function(s){return s.key===key;});
+  if (a.progress[key]) {
+    // unmark this stage and all subsequent
+    PROGRESS_STAGES.slice(keyIdx).forEach(function(s){delete a.progress[s.key];});
+  } else {
+    a.progress[key] = new Date().toISOString();
+  }
+
+  const {error} = await sb.from('articles').update({progress: a.progress}).eq('id', a.id);
+  if (error) { showToast('Gagal simpan progres: ' + error.message, 'error'); return; }
+
+  renderProgressTimeline(a);
+  applyFilters(); // refresh mini dots on cards
+}
+
+// ============================================================
 //  UTILS
 // ============================================================
 function setDbState(state, label) {
-  const dot = document.getElementById('dbDot');
-  const lbl = document.getElementById('dbLabel');
-  if (dot) { dot.className='db-dot'; if(state!=='ok') dot.classList.add(state); else dot.classList.add('ok'); }
-  if (lbl) lbl.textContent = label;
+  const tb = document.getElementById('tbDb');
+  const tbLbl = document.getElementById('tbDbLabel');
+  const heroDb = document.getElementById('heroDb');
+  const heroDbLbl = document.getElementById('heroDbLabel');
+  if (tb) { tb.className = 'tb-db ' + state; }
+  if (tbLbl) tbLbl.textContent = state==='ok' ? 'DB Connected' : (state==='err' ? 'DB Error' : 'Connecting...');
+  if (heroDb) { heroDb.className = 'hero-chip cdb' + (state==='err'?' err':''); }
+  if (heroDbLbl) heroDbLbl.textContent = 'DB: ' + (state==='ok' ? 'Online' : (state==='err' ? 'Error' : 'Menghubungkan...'));
 }
 
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
