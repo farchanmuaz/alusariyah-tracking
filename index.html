@@ -1231,7 +1231,7 @@ function renderPersonnel() {
     const countEl = document.getElementById('count' + cap(role) + 's');
     countEl.textContent = personnel[role].length + ' terdaftar';
     listEl.innerHTML = personnel[role].length
-      ? personnel[role].map(function(name){return '<div class="personnel-item"><div><input type="text" class="personnel-name-input" value="'+escH(name)+'" readonly data-original-name="'+escH(name)+'" /><div class="personnel-role">'+cap(role)+'</div></div><div class="personnel-actions"><button class="btn btn-edit btn-xs" onclick="togglePersonnelEdit(this)">Edit</button><button class="btn btn-delete btn-xs" onclick="removePersonnel(\''+role+'\',this.previousElementSibling.querySelector(\'.personnel-name-input\').value)">Hapus</button></div></div>';}).join('')
+      ? personnel[role].map(function(name){return '<div class="personnel-item"><div><input type="text" class="personnel-name-input" value="'+escH(name)+'" readonly data-original-name="'+escH(name)+'" /><div class="personnel-role">'+cap(role)+'</div></div><div class="personnel-actions"><button class="btn btn-edit btn-xs" onclick="togglePersonnelEdit(this)">Edit</button><button class="btn btn-delete btn-xs" onclick="removePersonnel(\''+role+'\',this.closest(\'.personnel-item\').querySelector(\'.personnel-name-input\').value)">Hapus</button></div></div>';}).join('')
       : '<div style="font-size:12px;color:var(--gray-400);padding:6px 0;">Belum ada personel</div>';
   });
 }
