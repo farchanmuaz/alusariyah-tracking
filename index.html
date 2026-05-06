@@ -213,6 +213,21 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 .role-layout{background:var(--purple-50);color:var(--purple-800);}
 .fund-pending{background:var(--amber-50);color:var(--amber-800);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
 .amount-tbd{color:var(--gray-400);font-style:italic;}
+.fund-status-btn{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;cursor:pointer;white-space:nowrap;transition:opacity .15s;font-family:'Inter',sans-serif;}
+.fund-status-btn:hover{opacity:.8;}
+.fst-belum{background:var(--amber-50);border-color:var(--amber-600);color:var(--amber-800);}
+.fst-proses{background:var(--blue-50);border-color:var(--blue-400);color:var(--blue-800);}
+.fst-lunas{background:var(--green-50);border-color:var(--green-600);color:var(--green-800);}
+.fund-amount-input{width:90px;padding:3px 6px;font-size:12px;border:1px solid var(--gray-200);border-radius:5px;font-family:'Inter',sans-serif;text-align:right;outline:none;}
+.fund-amount-input:focus{border-color:var(--green-600);}
+.fund-type-sel{padding:3px 4px;font-size:11px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;color:var(--gray-600);cursor:pointer;font-family:'Inter',sans-serif;}
+.fund-subtotal{background:var(--gray-50);font-weight:600;border-top:2px solid var(--gray-200);}
+.fund-subtotal td{padding:8px 14px !important;color:var(--gray-800);}
+.fund-person-summary{margin-top:1.5rem;}
+body.dark .fund-amount-input{background:#252a3a;border-color:#374151;color:#e5e7eb;}
+body.dark .fund-type-sel{background:#252a3a;border-color:#374151;color:#9ca3af;}
+body.dark .fund-subtotal{background:#252a3a;}
+body.dark .fund-subtotal td{color:#e5e7eb;}
 
 .stat-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem 1.25rem;}
 .stat-card-val{font-size:28px;font-weight:700;line-height:1;}
@@ -427,6 +442,17 @@ input:focus,select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px var(
 .card-prog-label{font-size:11px;color:var(--gray-400);}
 .article-title-link{cursor:pointer;transition:color .15s;}
 .article-title-link:hover{color:var(--dgreen-700);}
+.exp-wrap{position:relative;display:inline-block;}
+.exp-menu{position:absolute;top:calc(100% + 4px);right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:500;min-width:170px;overflow:hidden;display:none;}
+.exp-menu.open{display:block;}
+.exp-menu-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:#374151;cursor:pointer;white-space:nowrap;transition:background .12s;font-family:'Inter',sans-serif;border:none;background:none;width:100%;text-align:left;}
+.exp-menu-item:hover{background:#f3f4f6;color:#111827;}
+.exp-menu-item svg{flex-shrink:0;opacity:.6;}
+.exp-menu-sep{height:1px;background:#f3f4f6;margin:2px 0;}
+body.dark .exp-menu{background:#1e2130;border-color:#2d3148;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+body.dark .exp-menu-item{color:#d1d5db;}
+body.dark .exp-menu-item:hover{background:#252a3a;color:#f3f4f6;}
+body.dark .exp-menu-sep{background:#2d3148;}
 
 /* ── DARK MODE ── */
 body.dark{
@@ -663,7 +689,6 @@ body.dark .import-preview td{background:#1e2130;color:#e5e7eb;}
 
 <!-- TOPBAR -->
 <header class="topbar">
-  <button class="tb-sidebar-toggle" onclick="toggleSidebar()" title="Buka/Tutup sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="crumbs">
     <span class="crumb-home">Al Usariyah</span>
     <span class="crumb-sep">/</span>
@@ -872,9 +897,25 @@ body.dark .import-preview td{background:#1e2130;color:#e5e7eb;}
     <span style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Filter:</span>
     <select id="fundFilterRole" onchange="renderFunding()" style="width:130px;padding:5px 8px;font-size:13px;"><option value="">Semua Peran</option><option value="editor">Editor</option><option value="reviewer">Reviewer</option><option value="layout">Layout</option></select>
     <select id="fundFilterIssue" onchange="renderFunding()" style="width:160px;padding:5px 8px;font-size:13px;"><option value="">Semua Terbitan</option></select>
+    <select id="fundFilterStatus" onchange="renderFunding()" style="width:150px;padding:5px 8px;font-size:13px;"><option value="">Semua Status</option><option value="belum">Belum Dibayar</option><option value="proses">Proses Pengajuan</option><option value="lunas">Lunas</option></select>
     <input type="text" id="fundFilterName" placeholder="Cari nama..." oninput="renderFunding()" style="width:150px;padding:5px 8px;font-size:13px;" />
-    <button class="btn btn-delete btn-sm" onclick="exportFundingCSV()">Export CSV</button>
-    <button class="btn btn-delete btn-sm" onclick="exportFundingPDF()">Export PDF</button>
+    <button class="btn btn-review btn-sm" onclick="togglePersonSummary()">Rekap per Orang</button>
+    <div class="exp-wrap">
+      <button class="btn btn-delete btn-sm" onclick="toggleExpMenu('expCsvMenu',event)">↓ Export CSV <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="exp-menu" id="expCsvMenu">
+        <button class="exp-menu-item" onclick="exportFundingCSV(true);closeExpMenus()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M3 8h12M3 12h9"/></svg>Sesuai Filter</button>
+        <div class="exp-menu-sep"></div>
+        <button class="exp-menu-item" onclick="exportFundingCSV(false);closeExpMenus()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>Semua Data</button>
+      </div>
+    </div>
+    <div class="exp-wrap">
+      <button class="btn btn-delete btn-sm" onclick="toggleExpMenu('expPdfMenu',event)">↓ Export PDF <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="exp-menu" id="expPdfMenu">
+        <button class="exp-menu-item" onclick="exportFundingPDF(true);closeExpMenus()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M3 8h12M3 12h9"/></svg>Sesuai Filter</button>
+        <div class="exp-menu-sep"></div>
+        <button class="exp-menu-item" onclick="exportFundingPDF(false);closeExpMenus()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>Semua Data</button>
+      </div>
+    </div>
   </div>
   <div id="fundingContent"></div>
 </div>
@@ -950,18 +991,24 @@ body.dark .import-preview td{background:#1e2130;color:#e5e7eb;}
       <div class="panel-body" style="display:flex;align-items:center;justify-content:center;"><canvas id="chartByStatus" height="220"></canvas></div>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
     <div class="panel">
       <div class="panel-header">
-        <div><div class="panel-title">Distribusi Afiliasi</div></div>
+        <div><div class="panel-title">Distribusi Afiliasi</div><div class="panel-subtitle">Institusi penulis</div></div>
         <select id="chartAfilTop" onchange="renderCharts()" style="width:110px;padding:4px 8px;font-size:12px;"><option value="10">Top 10</option><option value="5">Top 5</option><option value="999">Semua</option></select>
       </div>
-      <div class="panel-body"><canvas id="chartByAfil" height="250"></canvas></div>
+      <div class="panel-body"><canvas id="chartByAfil" height="280"></canvas></div>
     </div>
     <div class="panel">
-      <div class="panel-header"><div><div class="panel-title">Beban Reviewer</div></div></div>
-      <div class="panel-body"><canvas id="chartByReviewer" height="250"></canvas></div>
+      <div class="panel-header"><div><div class="panel-title">Beban Reviewer</div><div class="panel-subtitle">Jumlah artikel per reviewer</div></div></div>
+      <div class="panel-body"><canvas id="chartByReviewer" height="280"></canvas></div>
     </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div><div class="panel-title">Tren Kumulatif</div><div class="panel-subtitle">Pertumbuhan artikel sepanjang waktu</div></div>
+    </div>
+    <div class="panel-body"><canvas id="chartTrend" height="160"></canvas></div>
   </div>
 </div>
 </div>
@@ -970,6 +1017,30 @@ body.dark .import-preview td{background:#1e2130;color:#e5e7eb;}
 </div><!-- end main-col -->
 </div><!-- end app-shell-grid -->
 </div><!-- end appShell -->
+
+<!-- REKAP PER ORANG MODAL -->
+<div class="modal-overlay" id="personSummaryModal">
+  <div class="modal" style="max-width:780px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Rekapitulasi per Orang</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="personSummaryMeta">—</div>
+      </div>
+      <button class="modal-close" onclick="closePersonSummaryModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0;" id="personSummaryBody"></div>
+    <div class="modal-footer">
+      <div class="exp-wrap">
+        <button class="btn btn-delete btn-sm" onclick="toggleExpMenu('expPersonCsvMenu',event)">↓ Export CSV <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="exp-menu" id="expPersonCsvMenu" style="bottom:calc(100% + 4px);top:auto;">
+          <button class="exp-menu-item" onclick="exportPersonSummaryCSV();closeExpMenus()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Export CSV</button>
+        </div>
+      </div>
+      <button class="btn btn-delete btn-sm" onclick="exportPersonSummaryPDF()">↓ Export PDF</button>
+      <button class="btn btn-primary btn-sm" style="width:auto;padding:7px 16px;" onclick="closePersonSummaryModal()">Tutup</button>
+    </div>
+  </div>
+</div>
 
 <!-- PROGRESS MODAL -->
 <div class="modal-overlay" id="progressModal">
@@ -1878,23 +1949,54 @@ function renderCard(a) {
 function getFundingRows() {
   const rows = [];
   articles.filter(function(a){return a.status==='review'||a.status==='published';}).forEach(function(a){
-    const push = function(name, role){if(name)rows.push({articleId:a.id,articleTitle:a.title,issue:a.issue||'Belum ditentukan',name,role});};
+    const fund = a.funding || {};
+    const push = function(name, role){
+      if (!name) return;
+      const fd = fund[role] || {};
+      rows.push({articleId:a.id, articleTitle:a.title, issue:a.issue||'Belum ditentukan', name, role,
+        amount: fd.amount || 0, payType: fd.payType || 'per_artikel', status: fd.status || 'belum'});
+    };
     push(a.editor,'editor'); push(a.reviewer,'reviewer'); push(a.layoutWorker,'layout');
   });
   return rows;
 }
 
+function getFilteredFundingRows() {
+  const roleFilter   = document.getElementById('fundFilterRole').value;
+  const issueFilter  = document.getElementById('fundFilterIssue').value;
+  const statusFilter = document.getElementById('fundFilterStatus').value;
+  const nameFilter   = document.getElementById('fundFilterName').value.toLowerCase();
+  return getFundingRows().filter(function(r) {
+    if (roleFilter   && r.role   !== roleFilter)   return false;
+    if (issueFilter  && r.issue  !== issueFilter)  return false;
+    if (statusFilter && r.status !== statusFilter) return false;
+    if (nameFilter   && !r.name.toLowerCase().includes(nameFilter)) return false;
+    return true;
+  });
+}
+
+function fmtRp(n) {
+  if (!n) return '—';
+  return 'Rp ' + Number(n).toLocaleString('id-ID');
+}
+
 function renderFunding() {
-  const roleFilter  = document.getElementById('fundFilterRole').value;
-  const issueFilter = document.getElementById('fundFilterIssue').value;
-  const nameFilter  = document.getElementById('fundFilterName').value.toLowerCase();
+  const roleFilter   = document.getElementById('fundFilterRole').value;
+  const issueFilter  = document.getElementById('fundFilterIssue').value;
+  const statusFilter = document.getElementById('fundFilterStatus').value;
+  const nameFilter   = document.getElementById('fundFilterName').value.toLowerCase();
   const allRows = getFundingRows();
-  const rc = { editor:allRows.filter(function(r){return r.role==='editor';}).length, reviewer:allRows.filter(function(r){return r.role==='reviewer';}).length, layout:allRows.filter(function(r){return r.role==='layout';}).length };
+
+  // Summary cards
+  const totalVal  = allRows.reduce(function(s,r){return s+r.amount;},0);
+  const lunasVal  = allRows.filter(function(r){return r.status==='lunas';}).reduce(function(s,r){return s+r.amount;},0);
+  const belumVal  = allRows.filter(function(r){return r.status!=='lunas';}).reduce(function(s,r){return s+r.amount;},0);
+  const lunasN    = allRows.filter(function(r){return r.status==='lunas';}).length;
   document.getElementById('fundingSummary').innerHTML =
     '<div class="fund-card ac-blue"><div class="fund-card-label">Total Penugasan</div><div class="fund-card-value">'+allRows.length+'</div></div>'+
-    '<div class="fund-card ac-blue"><div class="fund-card-label">Editor</div><div class="fund-card-value">'+rc.editor+'</div></div>'+
-    '<div class="fund-card ac-green"><div class="fund-card-label">Reviewer</div><div class="fund-card-value">'+rc.reviewer+'</div></div>'+
-    '<div class="fund-card ac-purple"><div class="fund-card-label">Layout</div><div class="fund-card-value">'+rc.layout+'</div></div>';
+    '<div class="fund-card ac-purple"><div class="fund-card-label">Total Nilai</div><div class="fund-card-value" style="font-size:16px;">'+fmtRp(totalVal)+'</div></div>'+
+    '<div class="fund-card ac-green"><div class="fund-card-label">Lunas ('+lunasN+')</div><div class="fund-card-value" style="font-size:16px;">'+fmtRp(lunasVal)+'</div></div>'+
+    '<div class="fund-card ac-amber"><div class="fund-card-label">Belum/Proses</div><div class="fund-card-value" style="font-size:16px;color:var(--amber-600);">'+fmtRp(belumVal)+'</div></div>';
 
   // Populate issue filter
   const issues = new Set(allRows.map(function(r){return r.issue;}));
@@ -1904,9 +2006,10 @@ function renderFunding() {
   [...issues].sort().forEach(function(is){const o=document.createElement('option');o.value=is;o.textContent=is;if(is===curIs)o.selected=true;isSel.appendChild(o);});
 
   let rows = allRows.filter(function(r){
-    if (roleFilter && r.role !== roleFilter) return false;
-    if (issueFilter && r.issue !== issueFilter) return false;
-    if (nameFilter && !r.name.toLowerCase().includes(nameFilter)) return false;
+    if (roleFilter   && r.role   !== roleFilter)   return false;
+    if (issueFilter  && r.issue  !== issueFilter)  return false;
+    if (statusFilter && r.status !== statusFilter) return false;
+    if (nameFilter   && !r.name.toLowerCase().includes(nameFilter)) return false;
     return true;
   });
 
@@ -1916,22 +2019,191 @@ function renderFunding() {
   const grouped = {};
   rows.forEach(function(r){if(!grouped[r.issue])grouped[r.issue]=[];grouped[r.issue].push(r);});
   const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
+  const statusLabel = {belum:'Belum Dibayar',proses:'Proses Pengajuan',lunas:'Lunas'};
+  const statusCls   = {belum:'fst-belum',proses:'fst-proses',lunas:'fst-lunas'};
+
   content.innerHTML = Object.keys(grouped).sort().map(function(issue){
     const iRows = grouped[issue];
-    return '<div class="issue-group"><div class="issue-group-header"><span class="issue-group-title">'+escH(issue)+'</span><span style="font-size:11px;color:var(--gray-400);">'+iRows.length+' penugasan</span></div><div class="funding-table-wrap"><table class="funding-table"><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul Artikel</th><th>Biaya</th><th>Status</th></tr></thead><tbody>'+iRows.map(function(r,i){return '<tr><td style="color:var(--gray-400);">'+(i+1)+'</td><td style="font-weight:500;">'+escH(r.name)+'</td><td><span class="role-tag role-'+r.role+'">'+roleLabel[r.role]+'</span></td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+escH(r.articleTitle)+'">'+escH(r.articleTitle)+'</td><td><span class="amount-tbd">Menyusul</span></td><td><span class="fund-pending">Belum Dibayar</span></td></tr>';}).join('')+'</tbody></table></div></div>';
+    const issueTotal = iRows.reduce(function(s,r){return s+r.amount;},0);
+    const issueLunas = iRows.filter(function(r){return r.status==='lunas';}).length;
+    const issueRows = iRows.map(function(r,i){
+      const ptOpts = ['per_artikel','flat'].map(function(pt){
+        return '<option value="'+pt+'"'+(r.payType===pt?' selected':'')+'>'+( pt==='per_artikel'?'/ artikel':'flat')+'</option>';
+      }).join('');
+      return '<tr>'+
+        '<td style="color:var(--gray-400);">'+(i+1)+'</td>'+
+        '<td style="font-weight:500;">'+escH(r.name)+'</td>'+
+        '<td><span class="role-tag role-'+r.role+'">'+roleLabel[r.role]+'</span></td>'+
+        '<td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+escH(r.articleTitle)+'">'+escH(r.articleTitle)+'</td>'+
+        '<td><div style="display:flex;align-items:center;gap:4px;">'+
+          '<input type="number" class="fund-amount-input" value="'+(r.amount||'')+'" placeholder="0" min="0" step="1000" '+
+            'onchange="setFundAmount(\''+r.articleId+'\',\''+r.role+'\',this.value)" />'+
+          '<select class="fund-type-sel" onchange="saveFundingField(\''+r.articleId+'\',\''+r.role+'\',\'payType\',this.value)">'+ptOpts+'</select>'+
+        '</div></td>'+
+        '<td><button class="fund-status-btn '+statusCls[r.status]+'" onclick="cycleFundStatus(\''+r.articleId+'\',\''+r.role+'\')">'+statusLabel[r.status]+'</button></td>'+
+      '</tr>';
+    }).join('');
+    return '<div class="issue-group">'+
+      '<div class="issue-group-header"><span class="issue-group-title">'+escH(issue)+'</span>'+
+        '<span style="font-size:11px;color:var(--gray-400);">'+iRows.length+' penugasan · '+issueLunas+' lunas · Total: '+fmtRp(issueTotal)+'</span>'+
+      '</div>'+
+      '<div class="funding-table-wrap"><table class="funding-table">'+
+        '<thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul Artikel</th><th>Biaya</th><th>Status Bayar</th></tr></thead>'+
+        '<tbody>'+issueRows+
+          '<tr class="fund-subtotal">'+
+            '<td colspan="4" style="text-align:right;">Total '+escH(issue)+'</td>'+
+            '<td>'+fmtRp(issueTotal)+'</td>'+
+            '<td>'+issueLunas+'/'+iRows.length+' lunas</td>'+
+          '</tr>'+
+        '</tbody>'+
+      '</table></div></div>';
   }).join('');
 }
 
-function exportFundingCSV() {
-  const rows = getFundingRows();
-  if (!rows.length) { showToast('Tidak ada data','error'); return; }
-  const lines = [['No','Terbitan','Nama','Peran','Judul Artikel','Biaya','Status'].join(',')];
-  rows.forEach(function(r,i){lines.push([i+1,'"'+r.issue+'"','"'+r.name+'"',r.role,'"'+r.articleTitle.replace(/"/g,'""')+'"','Menyusul','Belum Dibayar'].join(','));});
+async function saveFundingField(articleId, role, field, value) {
+  const article = articles.find(function(a){return a.id===articleId;});
+  if (!article) return;
+  if (!article.funding) article.funding = {};
+  if (!article.funding[role]) article.funding[role] = {};
+  article.funding[role][field] = value;
+  const { error } = await sb.from('articles').update({funding: article.funding}).eq('id', articleId);
+  if (error) showToast('Gagal simpan: '+error.message, 'error');
+}
+
+async function setFundAmount(articleId, role, value) {
+  const num = parseFloat(value) || 0;
+  await saveFundingField(articleId, role, 'amount', num);
+  renderFunding();
+}
+
+async function cycleFundStatus(articleId, role) {
+  const article = articles.find(function(a){return a.id===articleId;});
+  if (!article) return;
+  const cur = (article.funding && article.funding[role] && article.funding[role].status) || 'belum';
+  const next = {belum:'proses', proses:'lunas', lunas:'belum'}[cur] || 'belum';
+  await saveFundingField(articleId, role, 'status', next);
+  renderFunding();
+}
+
+function toggleExpMenu(id, e) {
+  e.stopPropagation();
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('open');
+  closeExpMenus();
+  if (!wasOpen) el.classList.add('open');
+}
+function closeExpMenus() {
+  document.querySelectorAll('.exp-menu').forEach(function(m){m.classList.remove('open');});
+}
+document.addEventListener('click', closeExpMenus);
+
+let _personSummaryData = [];
+
+function buildPersonSummaryData() {
+  const allRows = getFundingRows();
+  const byPerson = {};
+  allRows.forEach(function(r){
+    const k = r.name+'|'+r.role;
+    if (!byPerson[k]) byPerson[k] = {name:r.name, role:r.role, count:0, total:0, lunas:0, belum:0, proses:0};
+    byPerson[k].count++;
+    byPerson[k].total += r.amount;
+    byPerson[k][r.status] = (byPerson[k][r.status]||0)+1;
+  });
+  _personSummaryData = Object.values(byPerson).sort(function(a,b){return b.total-a.total;});
+  return {rows: _personSummaryData, allRows};
+}
+
+function togglePersonSummary() {
+  const {rows, allRows} = buildPersonSummaryData();
+  const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
+  const totalVal = allRows.reduce(function(s,r){return s+r.amount;},0);
+  document.getElementById('personSummaryMeta').textContent =
+    rows.length+' personel · '+allRows.length+' penugasan · Total: '+fmtRp(totalVal);
+  document.getElementById('personSummaryBody').innerHTML =
+    '<div class="funding-table-wrap" style="border-radius:0;border:none;">'+
+    '<table class="funding-table">'+
+      '<thead><tr><th>Nama</th><th>Peran</th><th>Penugasan</th><th>Total Biaya</th><th>Lunas</th><th>Proses</th><th>Belum</th></tr></thead>'+
+      '<tbody>'+rows.map(function(p){
+        return '<tr>'+
+          '<td style="font-weight:500;">'+escH(p.name)+'</td>'+
+          '<td><span class="role-tag role-'+p.role+'">'+roleLabel[p.role]+'</span></td>'+
+          '<td>'+p.count+'</td>'+
+          '<td style="font-weight:600;">'+fmtRp(p.total)+'</td>'+
+          '<td><span class="fund-status-btn fst-lunas" style="cursor:default;">'+p.lunas+'</span></td>'+
+          '<td><span class="fund-status-btn fst-proses" style="cursor:default;">'+p.proses+'</span></td>'+
+          '<td><span class="fund-status-btn fst-belum" style="cursor:default;">'+p.belum+'</span></td>'+
+        '</tr>';
+      }).join('')+
+      '<tr class="fund-subtotal"><td colspan="3">Total Keseluruhan</td>'+
+        '<td>'+fmtRp(totalVal)+'</td>'+
+        '<td>'+allRows.filter(function(r){return r.status==='lunas';}).length+'</td>'+
+        '<td>'+allRows.filter(function(r){return r.status==='proses';}).length+'</td>'+
+        '<td>'+allRows.filter(function(r){return r.status==='belum';}).length+'</td>'+
+      '</tr>'+
+    '</tbody></table></div>';
+  document.getElementById('personSummaryModal').classList.add('open');
+}
+
+function closePersonSummaryModal() {
+  document.getElementById('personSummaryModal').classList.remove('open');
+}
+
+function exportPersonSummaryCSV() {
+  if (!_personSummaryData.length) { showToast('Tidak ada data','error'); return; }
+  const lines = [['Nama','Peran','Penugasan','Total Biaya (Rp)','Lunas','Proses','Belum'].join(',')];
+  _personSummaryData.forEach(function(p){
+    lines.push(['"'+p.name+'"',p.role,p.count,p.total,p.lunas,p.proses,p.belum].join(','));
+  });
+  const blob = new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='rekap-per-orang.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV rekap berhasil diunduh','success');
+}
+
+function exportPersonSummaryPDF() {
+  if (!_personSummaryData.length) { showToast('Tidak ada data','error'); return; }
+  const roleLabel = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
+  const totalVal = _personSummaryData.reduce(function(s,p){return s+p.total;},0);
+  const dataRows = _personSummaryData.map(function(p,i){
+    return '<tr><td>'+(i+1)+'</td><td><strong>'+escH(p.name)+'</strong></td><td>'+roleLabel[p.role]+'</td>'+
+      '<td>'+p.count+'</td><td style="font-weight:600;">'+fmtRp(p.total)+'</td>'+
+      '<td style="color:#264f12;font-weight:600;">'+p.lunas+'</td>'+
+      '<td style="color:#185FA5;">'+p.proses+'</td>'+
+      '<td style="color:#854F0B;">'+p.belum+'</td></tr>';
+  }).join('');
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rekap per Orang</title>'+
+    '<style>body{font-family:sans-serif;font-size:12px;margin:2cm;}h1{font-size:18px;margin-bottom:4px;}'+
+    '.meta{color:#9ea4b0;font-size:11px;margin-bottom:16px;}'+
+    'table{width:100%;border-collapse:collapse;}th{background:#f7f8fa;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;border-bottom:1px solid #d8dbe2;}'+
+    'td{padding:7px 10px;border-bottom:1px solid #eef0f3;}'+
+    '.sub{background:#f7f8fa;font-weight:700;border-top:2px solid #d8dbe2;}</style></head>'+
+    '<body><h1>Rekapitulasi Pendanaan per Orang — Al Usariyah</h1>'+
+    '<div class="meta">Dicetak: '+new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+
+    ' · '+_personSummaryData.length+' personel · Total: '+fmtRp(totalVal)+'</div>'+
+    '<table><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Penugasan</th><th>Total Biaya</th><th>Lunas</th><th>Proses</th><th>Belum</th></tr></thead>'+
+    '<tbody>'+dataRows+
+    '<tr class="sub"><td colspan="4">Total Keseluruhan</td><td>'+fmtRp(totalVal)+'</td>'+
+    '<td>'+_personSummaryData.reduce(function(s,p){return s+p.lunas;},0)+'</td>'+
+    '<td>'+_personSummaryData.reduce(function(s,p){return s+p.proses;},0)+'</td>'+
+    '<td>'+_personSummaryData.reduce(function(s,p){return s+p.belum;},0)+'</td></tr>'+
+    '</tbody></table><script>window.onload=function(){window.print();}<\/script></body></html>';
+  const win = window.open('','_blank'); win.document.write(html); win.document.close();
+  showToast('PDF rekap membuka jendela cetak...','success');
+}
+
+function exportFundingCSV(filtered) {
+  const rows = filtered ? getFilteredFundingRows() : getFundingRows();
+  if (!rows.length) { showToast('Tidak ada data'+(filtered?' (filter aktif, coba Export Semua)':''),'error'); return; }
+  const statusLabel = {belum:'Belum Dibayar',proses:'Proses Pengajuan',lunas:'Lunas'};
+  const lines = [['No','Terbitan','Nama','Peran','Judul Artikel','Tipe Biaya','Biaya (Rp)','Status Bayar'].join(',')];
+  rows.forEach(function(r,i){lines.push([i+1,'"'+r.issue+'"','"'+r.name+'"',r.role,'"'+r.articleTitle.replace(/"/g,'""')+'"',r.payType==='flat'?'Flat':'Per Artikel',r.amount||0,statusLabel[r.status]||r.status].join(','));});
+  const suffix = filtered ? '-filter' : '-semua';
   const blob = new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='pendanaan-al-usariyah.csv'; a.click();
+  const a = document.createElement('a'); a.href=url; a.download='pendanaan-al-usariyah'+suffix+'.csv'; a.click();
   URL.revokeObjectURL(url);
-  showToast('CSV berhasil diunduh','success');
+  showToast('CSV ('+rows.length+' baris) berhasil diunduh','success');
 }
 
 function exportArticlesExcel() {
@@ -1963,15 +2235,48 @@ function exportArticlesExcel() {
   showToast('Excel berhasil diunduh','success');
 }
 
-function exportFundingPDF() {
-  const rows = getFundingRows();
-  if (!rows.length) { showToast('Tidak ada data','error'); return; }
+function exportFundingPDF(filtered) {
+  const rows = filtered ? getFilteredFundingRows() : getFundingRows();
+  if (!rows.length) { showToast('Tidak ada data'+(filtered?' (filter aktif, coba Export Semua)':''),'error'); return; }
   const grouped = {};
   rows.forEach(function(r){if(!grouped[r.issue])grouped[r.issue]=[];grouped[r.issue].push(r);});
   const rl = {editor:'Editor',reviewer:'Reviewer',layout:'Layout'};
-  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pendanaan</title><style>body{font-family:sans-serif;font-size:12px;margin:2cm;}h1{font-size:18px;}h2{font-size:14px;color:#185FA5;border-bottom:2px solid #185FA5;padding-bottom:4px;margin:16px 0 8px;}table{width:100%;border-collapse:collapse;}th{background:#f7f8fa;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;border-bottom:1px solid #d8dbe2;}td{padding:7px 10px;border-bottom:1px solid #eef0f3;}</style></head><body><h1>Laporan Pendanaan — Al Usariyah</h1><p style="color:#9ea4b0;font-size:11px;margin-bottom:20px;">'+new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</p>'+Object.keys(grouped).sort().map(function(issue){return '<h2>'+issue+'</h2><table><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul</th><th>Biaya</th></tr></thead><tbody>'+grouped[issue].map(function(r,i){return '<tr><td>'+(i+1)+'</td><td><strong>'+r.name+'</strong></td><td>'+rl[r.role]+'</td><td>'+r.articleTitle+'</td><td style="color:#9ea4b0;font-style:italic;">Menyusul</td></tr>';}).join('')+'<\/tbody><\/table>';}).join('')+'<script>window.onload=function(){window.print();}<\/script><\/body><\/html>';
+  const statusLabel = {belum:'Belum Dibayar',proses:'Proses Pengajuan',lunas:'Lunas'};
+  const statusColor = {belum:'#854F0B',proses:'#185FA5',lunas:'#264f12'};
+  const statusBg    = {belum:'#FAEEDA',proses:'#E6F1FB',lunas:'#eef6e2'};
+  const filterDesc  = filtered ? ' (Sesuai Filter)' : ' (Semua Data)';
+  const totalVal    = rows.reduce(function(s,r){return s+r.amount;},0);
+  const lunasN      = rows.filter(function(r){return r.status==='lunas';}).length;
+  const tableRows = Object.keys(grouped).sort().map(function(issue){
+    const gr = grouped[issue];
+    const issueTotal = gr.reduce(function(s,r){return s+r.amount;},0);
+    const dataRows = gr.map(function(r,i){
+      const sc = statusColor[r.status]||'#854F0B';
+      const sb = statusBg[r.status]||'#FAEEDA';
+      const rpStr = r.amount ? 'Rp '+Number(r.amount).toLocaleString('id-ID') : '—';
+      return '<tr><td>'+(i+1)+'</td><td><strong>'+escH(r.name)+'</strong></td><td>'+rl[r.role]+'</td><td style="max-width:220px;overflow:hidden;">'+escH(r.articleTitle)+'</td><td style="text-align:right;font-weight:600;">'+rpStr+'</td><td style="text-align:center;"><span style="background:'+sb+';color:'+sc+';padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;">'+(statusLabel[r.status]||r.status)+'</span></td></tr>';
+    }).join('');
+    const subtotal = '<tr style="background:#f7f8fa;font-weight:700;border-top:2px solid #d8dbe2;"><td colspan="4" style="text-align:right;padding:8px 10px;">Total '+escH(issue)+'</td><td style="text-align:right;padding:8px 10px;">Rp '+Number(issueTotal).toLocaleString('id-ID')+'</td><td style="text-align:center;padding:8px 10px;">'+gr.filter(function(r){return r.status==='lunas';}).length+'/'+gr.length+' lunas</td></tr>';
+    return '<h2>'+escH(issue)+'</h2><table><thead><tr><th>#</th><th>Nama</th><th>Peran</th><th>Judul Artikel</th><th style="text-align:right;">Biaya</th><th style="text-align:center;">Status</th></tr></thead><tbody>'+dataRows+subtotal+'</tbody></table>';
+  }).join('');
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pendanaan Al Usariyah</title>'+
+    '<style>body{font-family:sans-serif;font-size:12px;margin:2cm;}h1{font-size:18px;margin-bottom:4px;}'+
+    '.meta{color:#9ea4b0;font-size:11px;margin-bottom:8px;}.summary{display:flex;gap:20px;margin:12px 0 20px;padding:12px;background:#f7f8fa;border-radius:6px;}'+
+    '.sum-item{text-align:center;}.sum-label{font-size:10px;color:#9ea4b0;text-transform:uppercase;}.sum-val{font-size:18px;font-weight:700;color:#264f12;}'+
+    'h2{font-size:14px;color:#185FA5;border-bottom:2px solid #185FA5;padding-bottom:4px;margin:20px 0 8px;}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:4px;}th{background:#f7f8fa;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;border-bottom:1px solid #d8dbe2;}'+
+    'td{padding:7px 10px;border-bottom:1px solid #eef0f3;vertical-align:middle;}</style></head>'+
+    '<body><h1>Laporan Pendanaan — Al Usariyah'+filterDesc+'</h1>'+
+    '<div class="meta">Dicetak: '+new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div>'+
+    '<div class="summary">'+
+      '<div class="sum-item"><div class="sum-label">Total Baris</div><div class="sum-val">'+rows.length+'</div></div>'+
+      '<div class="sum-item"><div class="sum-label">Total Nilai</div><div class="sum-val" style="font-size:14px;">Rp '+Number(totalVal).toLocaleString('id-ID')+'</div></div>'+
+      '<div class="sum-item"><div class="sum-label">Lunas</div><div class="sum-val">'+lunasN+'</div></div>'+
+      '<div class="sum-item"><div class="sum-label">Belum/Proses</div><div class="sum-val" style="color:#854F0B;">'+(rows.length-lunasN)+'</div></div>'+
+    '</div>'+tableRows+
+    '<script>window.onload=function(){window.print();}<\/script></body></html>';
   const win = window.open('','_blank'); win.document.write(html); win.document.close();
-  showToast('Membuka jendela cetak...','success');
+  showToast('PDF ('+rows.length+' baris) membuka jendela cetak...','success');
 }
 
 // ============================================================
@@ -2027,37 +2332,93 @@ function renderCharts() {
   const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   const mCounts = Array(12).fill(0);
   articles.forEach(function(a){if(!a.date||!a.date.startsWith(curYear))return;const m=parseInt(a.date.split('-')[1])-1;if(m>=0&&m<12)mCounts[m]++;});
-  const mCtx = document.getElementById('chartByMonth');
-  if (mCtx) chartInstances['month'] = new Chart(mCtx.getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Artikel',data:mCounts,backgroundColor:'#378ADD',borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},x:{grid:{display:false}}}}});
+  const VIVID = ['#6366f1','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16'];
+  const gridColor = document.body.classList.contains('dark') ? '#2d3148' : '#f1f5f9';
+  const tickColor = document.body.classList.contains('dark') ? '#9ca3af' : '#6b7280';
 
-  // Status donut
+  // ── LINE chart: Artikel per Bulan ──
+  const mCtx = document.getElementById('chartByMonth');
+  if (mCtx) {
+    const c2d = mCtx.getContext('2d');
+    const grad = c2d.createLinearGradient(0, 0, 0, 220);
+    grad.addColorStop(0, 'rgba(99,102,241,.40)');
+    grad.addColorStop(1, 'rgba(99,102,241,.02)');
+    chartInstances['month'] = new Chart(c2d, {
+      type: 'line',
+      data: { labels: months, datasets: [{ label: 'Artikel', data: mCounts, borderColor: '#6366f1', backgroundColor: grad, fill: true, tension: 0.45, pointBackgroundColor: '#6366f1', pointBorderColor: '#fff', pointBorderWidth: 2.5, pointRadius: 5, pointHoverRadius: 8, borderWidth: 2.5 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ' ' + c.parsed.y + ' artikel'; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } }, x: { grid: { display: false }, ticks: { color: tickColor } } } }
+    });
+  }
+
+  // ── DOUGHNUT: Status Artikel (vivid) ──
   destroyChart('status');
   const sCounts = {};
-  articles.forEach(function(a){sCounts[a.status]=(sCounts[a.status]||0)+1;});
+  articles.forEach(function(a) { sCounts[a.status] = (sCounts[a.status] || 0) + 1; });
   const sKeys = Object.keys(sCounts);
-  const sColors = {submitted:'#378ADD',review:'#0F6E56',published:'#3B6D11',rejected:'#A32D2D'};
-  const sLabels = {submitted:'Diajukan',review:'Review',published:'Terbit',rejected:'Ditolak'};
+  const sColors = { submitted: '#6366f1', review: '#06b6d4', published: '#10b981', rejected: '#ef4444' };
+  const sLabels = { submitted: 'Diajukan', review: 'Review', published: 'Terbit', rejected: 'Ditolak' };
   const sCtx = document.getElementById('chartByStatus');
-  if (sCtx && sKeys.length) chartInstances['status'] = new Chart(sCtx.getContext('2d'),{type:'doughnut',data:{labels:sKeys.map(function(k){return sLabels[k]||k;}),datasets:[{data:sKeys.map(function(k){return sCounts[k];}),backgroundColor:sKeys.map(function(k){return sColors[k]||'#9EA4B0';}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12},padding:16}}},cutout:'60%'}});
+  if (sCtx && sKeys.length) {
+    chartInstances['status'] = new Chart(sCtx.getContext('2d'), {
+      type: 'doughnut',
+      data: { labels: sKeys.map(function(k) { return sLabels[k] || k; }), datasets: [{ data: sKeys.map(function(k) { return sCounts[k]; }), backgroundColor: sKeys.map(function(k) { return sColors[k] || '#9ca3af'; }), borderWidth: 3, borderColor: document.body.classList.contains('dark') ? '#1e2130' : '#fff', hoverOffset: 8 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 12, weight: '600' }, padding: 18, color: tickColor, usePointStyle: true, pointStyleWidth: 10 } },
+          tooltip: { callbacks: { label: function(c) { const pct = Math.round(c.parsed / articles.length * 100); return ' ' + c.label + ': ' + c.parsed + ' (' + pct + '%)'; } } }
+        }
+      }
+    });
+  }
 
-  // Afiliasi
+  // ── HORIZONTAL BAR: Afiliasi (multi-color) ──
   destroyChart('afil');
-  const top = parseInt((document.getElementById('chartAfilTop')||{value:10}).value||10);
+  const top = parseInt((document.getElementById('chartAfilTop') || { value: 10 }).value || 10);
   const aCounts = {};
-  articles.forEach(function(a){(a.authors||[]).forEach(function(au){const af=(au.affiliation||'').trim();if(af)aCounts[af]=(aCounts[af]||0)+1;});});
-  const aSorted = Object.entries(aCounts).sort(function(a,b){return b[1]-a[1];}).slice(0,top);
+  articles.forEach(function(a) { (a.authors || []).forEach(function(au) { const af = (au.affiliation || '').trim(); if (af) aCounts[af] = (aCounts[af] || 0) + 1; }); });
+  const aSorted = Object.entries(aCounts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, top);
   const aCtx = document.getElementById('chartByAfil');
-  if (aCtx && aSorted.length) chartInstances['afil'] = new Chart(aCtx.getContext('2d'),{type:'bar',data:{labels:aSorted.map(function(e){return e[0].length>30?e[0].slice(0,28)+'…':e[0];}),datasets:[{label:'Artikel',data:aSorted.map(function(e){return e[1];}),backgroundColor:'#534AB7',borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  if (aCtx && aSorted.length) {
+    chartInstances['afil'] = new Chart(aCtx.getContext('2d'), {
+      type: 'bar',
+      data: { labels: aSorted.map(function(e) { return e[0].length > 28 ? e[0].slice(0, 26) + '…' : e[0]; }), datasets: [{ label: 'Artikel', data: aSorted.map(function(e) { return e[1]; }), backgroundColor: aSorted.map(function(_, i) { return VIVID[i % VIVID.length]; }), borderRadius: 6, borderSkipped: false, barThickness: 18 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: tickColor } } } }
+    });
+  }
 
-  // Reviewer
+  // ── HORIZONTAL BAR: Beban Reviewer (vivid) ──
   destroyChart('reviewer');
   const rCounts = {};
-  articles.forEach(function(a){if(a.reviewer)rCounts[a.reviewer]=(rCounts[a.reviewer]||0)+1;});
-  const rSorted = Object.entries(rCounts).sort(function(a,b){return b[1]-a[1];});
+  articles.forEach(function(a) { if (a.reviewer) rCounts[a.reviewer] = (rCounts[a.reviewer] || 0) + 1; });
+  const rSorted = Object.entries(rCounts).sort(function(a, b) { return b[1] - a[1]; });
   const rCtx = document.getElementById('chartByReviewer');
   if (rCtx && rSorted.length) {
-    const palette = ['#0F6E56','#185FA5','#534AB7','#854F0B','#3B6D11','#A32D2D'];
-    chartInstances['reviewer'] = new Chart(rCtx.getContext('2d'),{type:'bar',data:{labels:rSorted.map(function(e){return e[0];}),datasets:[{label:'Artikel',data:rSorted.map(function(e){return e[1];}),backgroundColor:rSorted.map(function(_,i){return palette[i%palette.length];}),borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#EEF0F3'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+    chartInstances['reviewer'] = new Chart(rCtx.getContext('2d'), {
+      type: 'bar',
+      data: { labels: rSorted.map(function(e) { return e[0]; }), datasets: [{ label: 'Artikel', data: rSorted.map(function(e) { return e[1]; }), backgroundColor: rSorted.map(function(_, i) { return VIVID[i % VIVID.length]; }), borderRadius: 6, borderSkipped: false, barThickness: 18 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: tickColor } } } }
+    });
+  }
+
+  // ── LINE: Tren Kumulatif (all time) ──
+  destroyChart('trend');
+  const allDates = articles.map(function(a) { return a.date; }).filter(Boolean).sort();
+  const tCtx = document.getElementById('chartTrend');
+  if (tCtx && allDates.length) {
+    const monthKeys = [];
+    const monthMap = {};
+    allDates.forEach(function(d) { const k = d.slice(0, 7); if (!monthMap[k]) { monthMap[k] = 0; monthKeys.push(k); } monthMap[k]++; });
+    let cum = 0;
+    const cumData = monthKeys.map(function(k) { cum += monthMap[k]; return cum; });
+    const gradT = tCtx.getContext('2d').createLinearGradient(0, 0, 0, 160);
+    gradT.addColorStop(0, 'rgba(16,185,129,.35)');
+    gradT.addColorStop(1, 'rgba(16,185,129,.02)');
+    chartInstances['trend'] = new Chart(tCtx.getContext('2d'), {
+      type: 'line',
+      data: { labels: monthKeys, datasets: [{ label: 'Total Kumulatif', data: cumData, borderColor: '#10b981', backgroundColor: gradT, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#10b981', pointBorderColor: '#fff', pointBorderWidth: 2, borderWidth: 2.5 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ' Total: ' + c.parsed.y + ' artikel'; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } }, x: { grid: { display: false }, ticks: { color: tickColor, maxRotation: 45 } } } }
+    });
   }
 }
 
